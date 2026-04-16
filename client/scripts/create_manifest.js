@@ -59,7 +59,7 @@ const addItemToManifest = async () => {
         });
 
         if (response.status === 401 || response.status === 403) {
-            handleAuthError(response.status);
+            handleAuthError();
             return;
         }
 
@@ -122,7 +122,7 @@ const submitManifest = async () => {
 
         // Handle unauthorized access
         if (response.status === 401 || response.status === 403) {
-            handleAuthError(response.status);
+            handleAuthError();
             return;
         }
 

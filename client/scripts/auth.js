@@ -4,16 +4,15 @@ async function loadUser() {
     });
 
     if (!res.ok) {
-        console.log('Authentication failed');
-        return { user: null, status: res.status };
+        console.log('Not logged in');
+        return null;
     }
 
     const user = await res.json();
-    return { user, status: res.status };
+    return user;
 }
 
-function showModal(title = 'Session Expired', message = 'Your session has expired. Please log in again.', redirectUrl = 'login.html') {
-
+function showModal(message = 'Your session has expired. Please log in again.', redirectUrl = 'login.html') {
     const modalElement = document.getElementById('sessionExpiredModal');
     if (!modalElement || typeof bootstrap === 'undefined') {
         alert(message);
@@ -22,7 +21,6 @@ function showModal(title = 'Session Expired', message = 'Your session has expire
     }
 
     modalElement.querySelector('.modal-body').textContent = message;
-    modalElement.querySelector('.modal-title').textContent = title;
     const sessionModal = new bootstrap.Modal(modalElement);
     const okButton = modalElement.querySelector('#sessionExpiredModalOk');
 
@@ -37,13 +35,6 @@ function showModal(title = 'Session Expired', message = 'Your session has expire
     sessionModal.show();
 }
 
-function handleAuthError(status, redirectUrl = 'login.html', message) {
-    if (status === 401 && !message) {
-        // User was never logged in, redirect directly
-        window.location.href = redirectUrl;
-    } else {
-        // Session expired or API error, show modal
-        const modalMessage = message || (status === 403 ? 'Your session has expired. Please log in again.' : 'Authentication error. Please log in again.');
-        showModal(modalMessage, redirectUrl);
-    }
+function handleAuthError(message, redirectUrl) {
+    showModal(message, redirectUrl);
 }

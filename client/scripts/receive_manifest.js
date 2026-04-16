@@ -60,7 +60,7 @@ const populateReceivingContent = async () => {
 
         // Handle unauthorized access
         if (response.status === 401 || response.status === 403) {
-            handleAuthError(response.status, 'index.html', 'Unauthorized Access');
+            handleAuthError('Unauthorized Access', 'index.html');
             return;
         }
 

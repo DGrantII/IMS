@@ -2,11 +2,11 @@
 
 // Check authentication on page load
 window.addEventListener('DOMContentLoaded', async () => {
-    const result = await loadUser();
-    if (!result.user) {
-        handleAuthError(result.status, 'login.html');
+    const user = await loadUser();
+    if (!user) {
+        handleAuthError('Your session has expired due to inactivity. Please log in again.', 'login.html');
         return;
     }
     // If logged in, proceed to load the page
-    document.getElementById('user-info').textContent = `Hello, ${result.user.name}`;
+    document.getElementById('user-info').textContent = `Hello, ${user.name}`;
 });

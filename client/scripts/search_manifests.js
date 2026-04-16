@@ -72,7 +72,7 @@ manifestForm.addEventListener('submit', async (e) => {
             credentials: 'include'
         });
         if (response.status === 401 || response.status === 403) {
-            handleAuthError(response.status);
+            handleAuthError();
             return;
         }
         const data = await response.json();
@@ -114,7 +114,7 @@ const fetchManifestDetails = async (manifestNumber) => {
             credentials: 'include'
         });
         if (response.status === 401 || response.status === 403) {
-            handleAuthError(response.status);
+            handleAuthError();
             return;
         }
         const data = await response.json();

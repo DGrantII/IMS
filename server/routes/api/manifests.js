@@ -145,7 +145,7 @@ router.post('/receive-manifest', authenticateToken, async (req, res) => {
                 VALUES ("Suspended", "Variance on manifest receipt", NOW(), ?)
             `;
             const [adjustmentResult] = await db.query(insertAdjustmentSql, [req.user.employeeID]);
-            const adjustmentId = adjustmentResult.insertID;
+            const adjustmentId = adjustmentResult.insertId;
 
             // Creating inventory adjustment items for each variance
             for (const variance of req.body.variances) {
