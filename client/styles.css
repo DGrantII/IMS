@@ -1,0 +1,40 @@
+/* Additional override for btn-primary */
+.btn-primary {
+    background-color: #001A4E !important;
+    border-color: #001A4E !important;
+}
+
+.btn-primary:hover {
+    background-color: #001A4E !important;
+    border-color: #001A4E !important;
+    opacity: 0.8;
+}
+
+div#headerWrapper {
+    background-color: #001A4E;
+}
+
+img#logo {
+    width: 90px;
+    height: auto;
+}
+
+/* Dark Blue Background color */
+body.login-page {
+    background-color: #001A4E;
+}
+
+/* Adjusting the size of the menu icon */
+.navbar-toggler {
+    width: 40px;
+    height: 40px;
+    padding: 5px;
+}
+.navbar-toggler-icon {
+    width: 100%;
+    height: 100%;
+}
+/* Hiding privileged features */
+.privileged {
+    display: none;
+}

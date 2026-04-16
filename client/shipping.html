@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="apple-touch-icon" sizes="180x180" href="./assets/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="./assets/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="./assets/favicon-16x16.png">
+    <link rel="manifest" href="./assets/site.webmanifest">
+    <script src="./scripts/nav.js" defer></script>
+    <script src="./scripts/auth.js" defer></script>
+    <script src="./scripts/search_manifests.js" defer></script>
+    <script src="./scripts/index.js" defer></script>
+    <title>IMS</title>
+</head>
+<body>
+    <header>
+        <div class="container-fluid text-white" id="headerWrapper">
+            <div class="row align-items-center p-2">
+                <div class="d-none d-md-block col-md-2">
+                    <img src="assets/logo.png" alt="Logo" id="logo">
+                </div>
+                <div class="col col-md-8 my-2 text-center">
+                    <h1>Inventory Management System</h1>
+                </div>
+                <div class="d-none d-md-block col-md-2 align-self-start text-end">
+                    <p id="user-info"></p>
+                </div>
+            </div>
+        </div>
+    </header>
+    <main>
+        <div class="container">
+            <div class="row">
+                <div class="col">
+                    <h2>Shipping</h2>
+                </div>
+                <div class="col text-end" id="createButtonWrapper"></div>
+            </div>
+            <div class="row border px-3 mb-4">
+                <div id="manifest-sidebar" class="col-md-3 my-4">
+                    <form id="manifestForm">
+                        <label for="manifestNumber" class="form-label">Manifest Number</label>
+                        <input type="text" class="form-control mb-3" id="manifestNumber" placeholder="Manifest Number">
+                        <label for="trackingNumber" class="form-label">Tracking Number</label>
+                        <input type="text" class="form-control mb-3" id="trackingNumber" placeholder="Tracking Number">
+                        <label for="itemNumberShipping" class="form-label">SKU/UPC</label>
+                        <input type="text" class="form-control mb-3" id="itemNumberShipping" placeholder="SKU or UPC">
+                        <label for="createDate" class="form-label">Create Date</label>
+                        <input type="date" class="form-control mb-3" id="createDate">
+                        <label for="status" class="form-label">Status</label>
+                        <select class="form-select mb-3" id="status">
+                            <option value="">Select Status</option>
+                            <option value="Shipped">Shipped</option>
+                            <option value="Received">Received</option>
+                        </select>
+                        <button type="submit" class="btn btn-primary w-100">Search</button>
+                    </form>
+                </div>
+                <div id="manifest-content" class="col-md-9 my-4"></div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Session expired modal -->
+    <div class="modal fade" id="sessionExpiredModal" tabindex="-1" aria-labelledby="sessionExpiredModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="sessionExpiredModalLabel">Session Expired</h5>
+                </div>
+                <div class="modal-body">Your session has expired due to inactivity. Please log in again.</div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="sessionExpiredModalOk">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+</body>
+</html>

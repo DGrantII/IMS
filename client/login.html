@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IMS</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+    <link rel="stylesheet" href="styles.css">
+    <script src="./scripts/auth.js"></script>
+</head>
+<body class="login-page">
+    <header class="mb-5">
+        <div class="container-fluid text-white" id="headerWrapper">
+            <div class="row align-items-center p-2">
+                <div class="d-none d-md-block col-md-2">
+                    <img src="assets/logo.png" alt="Logo" id="logo">
+                </div>
+                <div class="col col-md-8 my-2 text-center">
+                    <h1>Inventory Management System</h1>
+                </div>
+            </div>
+        </div>
+    </header>
+    <div class="container mt-5 pt-5">
+        <form id="loginForm" class="w-50 mx-auto bg-light rounded p-4">
+            <div class="mb-3">
+                <label for="employeeID" class="form-label">Employee ID</label>
+                <input type="text" class="form-control border border-2" id="employeeID" required>
+            </div>
+            <div class="mb-3">
+                <label for="password" class="form-label">Password</label>
+                <input type="password" class="form-control border border-2" id="password" required>
+            </div>
+            <button type="submit" class="btn btn-secondary w-100">Login</button>
+        </form>
+    </div>
+
+    <!-- Session expired modal -->
+    <div class="modal fade" id="sessionExpiredModal" tabindex="-1" aria-labelledby="sessionExpiredLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="sessionExpiredLabel">Session Expired</h1>
+                </div>
+                <div class="modal-body">
+                    Your login session has expired. Refresh the page to try again.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+    <script src="./scripts/login.js"></script>
+</body>
+</html>
