@@ -28,6 +28,13 @@ const createTableRow = (item, quantity) => {
     quantityCell.textContent = quantity;
     row.appendChild(quantityCell);
 
+    const removeCell = document.createElement('td');
+    const removeButton = document.createElement('button');
+    removeButton.textContent = 'Remove';
+    removeButton.classList.add('btn', 'btn-sm', 'btn-danger');
+    removeCell.appendChild(removeButton);
+    row.appendChild(removeCell);
+
     // Return the constructed row element
     return row;
 };
@@ -39,6 +46,7 @@ const addItemToManifest = async () => {
     const itemQuantity = itemQuantityInput?.value.trim();
     const quantity = Number(itemQuantity);
 
+    // Validate that the item number is provided and the quantity is a valid number greater than 0
     if (!itemNumber) {
         alert('Please enter an SKU or UPC.');
         return;
@@ -47,6 +55,17 @@ const addItemToManifest = async () => {
     if (!itemQuantity || Number.isNaN(quantity) || quantity < 1) {
         alert('Please enter a valid quantity of 1 or more.');
         return;
+    }
+
+    // Check if the item is already in the manifest to prevent duplicates
+    const existingRows = itemListBody.querySelectorAll('tr');
+    for (const row of existingRows) {
+        const skuCell = row.querySelector('td:first-child');
+        const upcCell = row.querySelector('td:nth-child(2)');
+        if (skuCell && skuCell.textContent === itemNumber) {
+            alert('This item is already added to the manifest. Please update the quantity if needed.');
+            return;
+        }
     }
 
     // Construct the API URL for searching the item by SKU or UPC
@@ -155,3 +174,12 @@ const showSuccessModal = () => {
 
 addItemButton?.addEventListener('click', addItemToManifest);
 
+// Function to handle removing an item from the manifest
+itemListBody.addEventListener('click', (event) => {
+    if (event.target.tagName === 'BUTTON' && event.target.textContent === 'Remove') {
+        const row = event.target.closest('tr');
+        if (row) {
+            itemListBody.removeChild(row);
+        }
+    }
+});
