@@ -85,8 +85,8 @@ Open a web browser and navigate to `http://localhost:3000`. You should see the l
 ## API Endpoints
 
 - `POST /api/account/login`: User login
-- `GET /api/queries/items`: Search items
-- `GET /api/queries/manifests`: Search manifests
+- `GET /api/items/search-item`: Search items
+- `GET /api/manifests/search-manifests`: Search manifests
 - Other endpoints as defined in the route files.
 
 ## Development
