@@ -12,7 +12,7 @@ async function loadUser() {
     return user;
 }
 
-function showModal(message = 'Your session has expired. Please log in again.', redirectUrl = 'login.html') {
+function showModal(title = 'Session Expired', message = 'Your session has expired. Please log in again.', redirectUrl = 'login.html') {
     const modalElement = document.getElementById('sessionExpiredModal');
     if (!modalElement || typeof bootstrap === 'undefined') {
         alert(message);
@@ -20,6 +20,7 @@ function showModal(message = 'Your session has expired. Please log in again.', r
         return;
     }
 
+    modalElement.querySelector('.modal-title').textContent = title;
     modalElement.querySelector('.modal-body').textContent = message;
     const sessionModal = new bootstrap.Modal(modalElement);
     const okButton = modalElement.querySelector('#sessionExpiredModalOk');
@@ -35,6 +36,6 @@ function showModal(message = 'Your session has expired. Please log in again.', r
     sessionModal.show();
 }
 
-function handleAuthError(message, redirectUrl) {
-    showModal(message, redirectUrl);
+function handleAuthError(message, redirectUrl, title = 'Session Expired') {
+    showModal(title, message, redirectUrl);
 }

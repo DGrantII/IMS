@@ -15,10 +15,10 @@ function requirePrivileged(req, res, next) {
 // Supports three search scenarios:
 // 1. By manifest number: ?manifestNumber=123
 // 2. By tracking number: ?trackingNumber=ABC123
-// 3. By combination of SKU/UPC, status, and create date: ?itemNumber=456&status=shipped&createDate=2026-04-06
+// 3. By combination of SKU/UPC, status, and create date range: ?itemNumber=456&status=shipped&createDateStart=2026-04-01&createDateEnd=2026-04-10
 router.get('/search-manifest', authenticateToken, async (req, res) => {
     try {
-        const { manifestNumber, trackingNumber, itemNumber, status, createDate } = req.query;
+        const { manifestNumber, trackingNumber, itemNumber, status, createDateStart, createDateEnd } = req.query;
 
         let sql;
         let placeholders = [];
@@ -45,8 +45,8 @@ router.get('/search-manifest', authenticateToken, async (req, res) => {
             `;
             placeholders = [trackingNumber];
         }
-        // Scenario 3: Search by combination of SKU/UPC, status, and create date
-        else if (itemNumber || status || createDate) {
+        // Scenario 3: Search by combination of SKU/UPC, status, and create date range
+        else if (itemNumber || status || createDateStart || createDateEnd) {
             let whereConditions = [];
             
             // Build dynamic WHERE clause
@@ -59,9 +59,16 @@ router.get('/search-manifest', authenticateToken, async (req, res) => {
                 whereConditions.push('Manifests.status = ?');
                 placeholders.push(status);
             }
-            if (createDate) {
-                whereConditions.push('Manifests.createDate = ?');
-                placeholders.push(createDate);
+            if (createDateStart && createDateEnd) {
+                whereConditions.push('Manifests.createDate BETWEEN ? AND ?');
+                placeholders.push(createDateStart);
+                placeholders.push(createDateEnd);
+            } else if (createDateStart) {
+                whereConditions.push('Manifests.createDate >= ?');
+                placeholders.push(createDateStart);
+            } else if (createDateEnd) {
+                whereConditions.push('Manifests.createDate <= ?');
+                placeholders.push(createDateEnd);
             }
 
             if (whereConditions.length === 0) {

@@ -2,25 +2,28 @@
 const manifestNumber = document.getElementById('manifestNumber');
 const trackingNumber = document.getElementById('trackingNumber');
 const itemNumber = document.getElementById('itemNumberShipping');
-const createDate = document.getElementById('createDate');
+const createDateStart = document.getElementById('createDateStart');
+const createDateEnd = document.getElementById('createDateEnd');
 const status = document.getElementById('status');
 
 // Function to update disabled state of fields
 function updateDisabled() {
     const hasManifestOrTracking = manifestNumber.value.trim() || trackingNumber.value.trim();
-    const hasOther = itemNumber.value.trim() || createDate.value || status.value;
+    const hasOther = itemNumber.value.trim() || createDateStart.value || createDateEnd.value || status.value;
 
     if (manifestNumber.value.trim()) {
         // Disable other fields when manifestNumber has value
         itemNumber.disabled = true;
-        createDate.disabled = true;
+        createDateStart.disabled = true;
+        createDateEnd.disabled = true;
         status.disabled = true;
         manifestNumber.disabled = false;
         trackingNumber.disabled = true;
     } else if (trackingNumber.value.trim()) {
         // Disable other fields when trackingNumber has value
         itemNumber.disabled = true;
-        createDate.disabled = true;
+        createDateStart.disabled = true;
+        createDateEnd.disabled = true;
         status.disabled = true;
         manifestNumber.disabled = true;
         trackingNumber.disabled = false;
@@ -29,14 +32,16 @@ function updateDisabled() {
         manifestNumber.disabled = true;
         trackingNumber.disabled = true;
         itemNumber.disabled = false;
-        createDate.disabled = false;
+        createDateStart.disabled = false;
+        createDateEnd.disabled = false;
         status.disabled = false;
     } else {
         // Enable all fields when no fields have value
         manifestNumber.disabled = false;
         trackingNumber.disabled = false;
         itemNumber.disabled = false;
-        createDate.disabled = false;
+        createDateStart.disabled = false;
+        createDateEnd.disabled = false;
         status.disabled = false;
     }
 }
@@ -45,7 +50,8 @@ function updateDisabled() {
 manifestNumber.addEventListener('input', updateDisabled);
 trackingNumber.addEventListener('input', updateDisabled);
 itemNumber.addEventListener('input', updateDisabled);
-createDate.addEventListener('input', updateDisabled);
+createDateStart.addEventListener('input', updateDisabled);
+createDateEnd.addEventListener('input', updateDisabled);
 status.addEventListener('change', updateDisabled);
 
 const manifestForm = document.querySelector('#manifestForm');
@@ -54,14 +60,16 @@ manifestForm.addEventListener('submit', async (e) => {
     const manifestNumber = document.getElementById('manifestNumber').value.trim();
     const trackingNumber = document.getElementById('trackingNumber').value.trim();
     const itemNumber = document.getElementById('itemNumberShipping').value.trim();
-    const createDate = document.getElementById('createDate').value;
+    const createDateStart = document.getElementById('createDateStart').value;
+    const createDateEnd = document.getElementById('createDateEnd').value;
     const status = document.getElementById('status').value;
 
     let queryParams = [];
     if (manifestNumber) queryParams.push(`manifestNumber=${encodeURIComponent(manifestNumber)}`);
     if (trackingNumber) queryParams.push(`trackingNumber=${encodeURIComponent(trackingNumber)}`);
     if (itemNumber) queryParams.push(`itemNumber=${encodeURIComponent(itemNumber)}`);
-    if (createDate) queryParams.push(`createDate=${encodeURIComponent(createDate)}`);
+    if (createDateStart) queryParams.push(`createDateStart=${encodeURIComponent(createDateStart)}`);
+    if (createDateEnd) queryParams.push(`createDateEnd=${encodeURIComponent(createDateEnd)}`);
     if (status) queryParams.push(`status=${encodeURIComponent(status)}`);
 
     const queryString = queryParams.length > 0 ? `?${queryParams.join('&')}` : '';
@@ -71,10 +79,12 @@ manifestForm.addEventListener('submit', async (e) => {
             method: 'GET',
             credentials: 'include'
         });
+
         if (response.status === 401 || response.status === 403) {
-            handleAuthError();
+            handleAuthError('You do not have access. Redirecting to home page.', 'index', 'Access Denied');
             return;
         }
+        
         const data = await response.json();
         if (!data.found) {
             const manifestContent = document.getElementById('manifest-content');

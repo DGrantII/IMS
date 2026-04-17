@@ -14,15 +14,15 @@ async function getUserRole() {
 
 async function createNav() {
     const navItems = [
-        { text: 'Home', href: './', page: 'index.html' },
-        { text: 'Products', href: './products', page: 'products.html' },
-        { text: 'Shipping', href: './shipping', page: 'shipping.html' },
+        { text: 'Home', href: './', page: 'index' },
+        { text: 'Products', href: './products', page: 'products' },
+        { text: 'Shipping', href: './shipping', page: 'shipping' },
         { text: 'Logout', href: '#', id: 'logoutBtn', icon: true }
     ];
 
     const userRole = await getUserRole();
     if (userRole.toLowerCase() === 'privileged' || userRole.toLowerCase() === 'admin') {
-        navItems.splice(3, 0, { text: 'Inventory Adjustment', href: '#', page: '#' });
+        navItems.splice(3, 0, { text: 'Inventory Adjustment', href: './inventory-adjustment', page: 'inventory-adjustment' });
     }
 
 
@@ -30,7 +30,7 @@ async function createNav() {
     const currentPath = window.location.pathname;
     let currentPage = currentPath.split('/').pop();
     if (currentPath === '/' || currentPage === '') {
-        currentPage = 'index.html';
+        currentPage = 'index';
     }
 
     // Create nav element

@@ -11,7 +11,8 @@
     <link rel="manifest" href="./assets/site.webmanifest">
     <script src="./scripts/nav.js" defer></script>
     <script src="./scripts/auth.js" defer></script>
-    <script src="./scripts/search_manifests.js" defer></script>
+    <script src="./scripts/privileged.js" defer></script>
+    <script src="./scripts/search_adjustments.js" defer></script>
     <script src="./scripts/index.js" defer></script>
     <title>IMS</title>
 </head>
@@ -35,20 +36,16 @@
         <div class="container">
             <div class="row">
                 <div class="col">
-                    <h2>Shipping</h2>
+                    <h2>Inventory Adjustment</h2>
                 </div>
                 <div class="col text-end" id="createButtonWrapper"></div>
             </div>
             <div class="row border px-3 mb-4">
-                <div id="manifest-sidebar" class="col-md-3 my-4">
-                    <form id="manifestForm">
-                        <label for="manifestNumber" class="form-label">Manifest Number</label>
-                        <input type="text" class="form-control mb-3" id="manifestNumber" placeholder="Manifest Number">
-                        <label for="trackingNumber" class="form-label">Tracking Number</label>
-                        <input type="text" class="form-control mb-3" id="trackingNumber" placeholder="Tracking Number">
-                        <label for="itemNumberShipping" class="form-label">SKU/UPC</label>
-                        <input type="text" class="form-control mb-3" id="itemNumberShipping" placeholder="SKU or UPC">
-                        <label class="form-label">Create Date</label>
+                <div id="adjustment-sidebar" class="col-md-3 my-4">
+                    <form id="adjustmentForm">
+                        <label for="adjustmentNumber" class="form-label">Adjustment Number</label>
+                        <input type="text" class="form-control mb-3" id="adjustmentNumber" placeholder="Adjustment Number">
+                        <label for="createDate" class="form-label">Create Date</label>
                         <div class="input-group mb-3">
                             <span class="input-group-text">From</span>
                             <input type="date" class="form-control" id="createDateStart">
@@ -60,13 +57,13 @@
                         <label for="status" class="form-label">Status</label>
                         <select class="form-select mb-3" id="status">
                             <option value="">Select Status</option>
-                            <option value="Shipped">Shipped</option>
-                            <option value="Received">Received</option>
+                            <option value="Suspended">Suspended</option>
+                            <option value="Completed">Completed</option>
                         </select>
                         <button type="submit" class="btn btn-primary w-100">Search</button>
                     </form>
                 </div>
-                <div id="manifest-content" class="col-md-9 my-4"></div>
+                <div id="adjustment-content" class="col-md-9 my-4"></div>
             </div>
         </div>
     </main>
