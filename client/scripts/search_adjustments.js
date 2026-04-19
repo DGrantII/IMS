@@ -1,5 +1,6 @@
 // Get form elements
 const adjustmentNumber = document.getElementById('adjustmentNumber');
+const itemNumber = document.getElementById('itemNumberAdjustment');
 const createDateStart = document.getElementById('createDateStart');
 const createDateEnd = document.getElementById('createDateEnd');
 const status = document.getElementById('status');
@@ -11,19 +12,22 @@ const updateDisabled = () => {
         createDateStart.disabled = true;
         createDateEnd.disabled = true;
         status.disabled = true;
+        itemNumber.disabled = true;
         adjustmentNumber.disabled = false;
-    } else if (createDateStart.value || createDateEnd.value || status.value) {
+    } else if (createDateStart.value || createDateEnd.value || status.value || itemNumber.value) {
         // Disable adjustmentNumber when other fields have value
         adjustmentNumber.disabled = true;
         createDateStart.disabled = false;
         createDateEnd.disabled = false;
         status.disabled = false;
+        itemNumber.disabled = false;
     } else {
         // Enable all fields when no fields have value
         adjustmentNumber.disabled = false;
         createDateStart.disabled = false;
         createDateEnd.disabled = false;
         status.disabled = false;
+        itemNumber.disabled = false;
     }
 }
 
@@ -32,6 +36,7 @@ adjustmentNumber.addEventListener('input', updateDisabled);
 createDateStart.addEventListener('input', updateDisabled);
 createDateEnd.addEventListener('input', updateDisabled);
 status.addEventListener('change', updateDisabled);
+itemNumber.addEventListener('input', updateDisabled);
 
 const adjustmentForm = document.querySelector('#adjustmentForm');
 adjustmentForm.addEventListener('submit', async (e) => {
@@ -40,12 +45,14 @@ adjustmentForm.addEventListener('submit', async (e) => {
     const createDateStart = document.getElementById('createDateStart').value;
     const createDateEnd = document.getElementById('createDateEnd').value;
     const status = document.getElementById('status').value;
+    const itemNumber = document.getElementById('itemNumberAdjustment').value.trim();
 
     let queryParams = [];
     if (adjustmentNumber) queryParams.push(`adjustmentNumber=${encodeURIComponent(adjustmentNumber)}`);
     if (createDateStart) queryParams.push(`createDateStart=${encodeURIComponent(createDateStart)}`);
     if (createDateEnd) queryParams.push(`createDateEnd=${encodeURIComponent(createDateEnd)}`);
     if (status) queryParams.push(`status=${encodeURIComponent(status)}`);
+    if (itemNumber) queryParams.push(`itemNumber=${encodeURIComponent(itemNumber)}`);
 
     const queryString = queryParams.length ? `?${queryParams.join('&')}` : '';
 
@@ -68,20 +75,31 @@ adjustmentForm.addEventListener('submit', async (e) => {
             </div>`;
             adjustmentContent.scrollIntoView({ behavior: 'smooth' });
         } else {
-            // Render adjustments in a table
+            console.log(data);
+            // Populate table with adjustment data
             if (data.adjustments.length === 1) {
-                window.location.href = `adjustment-details?adjustmentNumber=${encodeURIComponent(data.adjustments[0].adjustmentNumber)}`;
+                const adjustment = data.adjustments[0];
+                const itemArray = data.items;
+                populateAdjustmentTable(adjustment, itemArray);
             } else {
-
+                
                 // If more are found, show a list of adjustments to select from
                 const adjustmentContent = document.getElementById('adjustment-content');
                 let output = '<div class="list-group">';
                 data.adjustments.forEach(adjustment => {
-                    output += `<button type="button" class="list-group-item list-group-item-action" onclick='fetchAdjustmentDetails("${adjustment.adjustmentNumber}")'>Adjustment Number: ${adjustment.adjustmentNumber}<br>Create Date: ${new Date(adjustment.createDate).toLocaleDateString()}<br>Status: ${adjustment.status}</button>`;
+                    output += `
+                        <button type="button" class="list-group-item list-group-item-action" onclick='fetchAdjustmentDetails("${adjustment.inventoryAdjustmentID}")'>
+                            Adjustment Number: ${adjustment.inventoryAdjustmentID}<br />
+                            Create Date: ${new Date(adjustment.createDate).toLocaleDateString()}<br />
+                            Status: ${adjustment.status}<br />
+                            Item Count: ${adjustment.itemCount}
+                        </button>
+                    `;
                 });
                 output += '</div>';
                 adjustmentContent.innerHTML = output;
                 adjustmentContent.scrollIntoView({ behavior: 'smooth' });
+
             }
         }
     } catch (error) {
@@ -90,9 +108,82 @@ adjustmentForm.addEventListener('submit', async (e) => {
     }
 });
 
-const fetchAdjustmentDetails = (adjustmentNumber) => {
-    window.location.href = `adjustment-details?adjustmentNumber=${encodeURIComponent(adjustmentNumber)}`;
+const fetchAdjustmentDetails = async (adjustmentNumber) => {
+    try {
+        const response = await fetch(`/api/adjustments/search-adjustment?adjustmentNumber=${encodeURIComponent(adjustmentNumber)}`, {
+            method: 'GET',
+            credentials: 'include'
+        });
+        if (response.status === 401 || response.status === 403) {
+            handleAuthError();
+            return;
+        }
+        const data = await response.json();
+        populateAdjustmentTable(data.adjustments[0], data.items);
+    } catch (error) {
+        console.error('Error fetching adjustment details:', error);
+        alert('An error occurred while fetching adjustment details. Please try again later.');
+
+    }
 }
+
+const populateAdjustmentTable = (adjustment, items) => {
+    let output = `
+    <h3>Adjustment Details</h3>
+    <table id="adjustment-table" class="table table-striped">
+        <tbody>
+            <tr><th>Adjustment Number</th><td>${adjustment.inventoryAdjustmentID}</td></tr>
+            <tr><th>Create Date</th><td>${new Date(adjustment.createDate).toLocaleDateString()}</td></tr>
+            <tr><th>Status</th><td>${adjustment.status}</td></tr>
+            <tr><th>Adjusted By</th><td>${adjustment.adjustedBy || 'N/A'}</td></tr>
+            <tr><th>Reason</th><td>${adjustment.reason || 'N/A'}</td></tr>
+            <tr><th>Total Cost</th><td>${adjustment.totalCost || 'N/A'}</td></tr>
+        </tbody>
+    </table>
+    <h3>Items</h3>
+    <table id="adjustment-items-table" class="table table-striped">
+        <thead>
+            <tr>
+                <th>SKU</th>
+                <th>UPC</th>
+                <th>Description</th>
+                <th>Quantity Before</th>
+                <th>Quantity After</th>
+                <th>Cost</th>
+            </tr>
+        </thead>
+        <tbody>
+    `;
+    items.forEach(item => {
+        output += `
+            <tr>
+                <td>${item.sku}</td>
+                <td>${item.upc}</td>
+                <td>${item.description}</td>
+                <td>${item.quantityBefore}</td>
+                <td>${item.quantityAfter}</td>
+                <td>${item.cost}</td>
+            </tr>
+        `;
+    });
+    output += `
+        </tbody>
+    </table>
+    `;
+    document.getElementById('adjustment-content').innerHTML = output;
+    document.getElementById('adjustment-content').scrollIntoView({ behavior: 'smooth' });
+
+    if (adjustment.status.toLowerCase() === 'suspended') {
+        const modifyButton = document.createElement('button');
+        modifyButton.className = 'btn btn-primary w-25 float-end mt-3';
+        modifyButton.textContent = 'Modify';
+        modifyButton.addEventListener('click', () => {
+            window.location.href = `adjustment-details?adjustmentNumber=${encodeURIComponent(adjustment.inventoryAdjustmentID)}`;
+        });
+        document.getElementById('adjustment-content').appendChild(modifyButton);
+    }
+
+};
 
 const createAdjustmentButton = () => {
     const adjustmentButton = document.createElement('button');

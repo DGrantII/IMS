@@ -103,7 +103,11 @@ manifestForm.addEventListener('submit', async (e) => {
                 const manifestContent = document.getElementById('manifest-content');
                 let output = '<div class="list-group">';
                 data.manifests.forEach(manifest => {
-                    output += `<button type="button" class="list-group-item list-group-item-action" onclick='fetchManifestDetails("${manifest.manifestNumber}")'>Manifest Number: ${manifest.manifestNumber}<br>Create Date: ${new Date(manifest.createDate).toLocaleDateString()}<br>Status: ${manifest.status}</button>`;
+                    output += `<button type="button" class="list-group-item list-group-item-action" onclick='fetchManifestDetails("${manifest.manifestNumber}")'>
+                        Manifest Number: ${manifest.manifestNumber}<br />
+                        Create Date: ${new Date(manifest.createDate).toLocaleDateString()}<br />
+                        Status: ${manifest.status}
+                    </button>`;
                 });
                 output += '</div>';
                 manifestContent.innerHTML = output;
@@ -153,6 +157,7 @@ const populateManifestTable = (manifest, items) => {
         <thead>
             <tr>
                 <th>SKU</th>
+                <th>UPC</th>
                 <th>Description</th>
                 <th>Quantity</th>
             </tr>
@@ -163,6 +168,7 @@ const populateManifestTable = (manifest, items) => {
         output += `
             <tr>
                 <td>${item.sku}</td>
+                <td>${item.upc}</td>
                 <td>${item.description}</td>
                 <td>${item.quantity}</td>
             </tr>

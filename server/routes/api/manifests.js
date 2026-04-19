@@ -170,10 +170,10 @@ router.post('/receive-manifest', authenticateToken, async (req, res) => {
                 // Insert inventory adjustment item record
                 if (varianceQuantity !== 0) {
                     const insertAdjustmentItemSql = `
-                        INSERT INTO InventoryAdjustmentItems (inventoryAdjustmentID, sku, quantityBefore, quantityAfter, cost)
-                        VALUES (?, ?, ?, ?, ?)
+                        INSERT INTO InventoryAdjustmentItems (inventoryAdjustmentID, sku, variance, cost)
+                        VALUES (?, ?, ?, ?)
                     `;
-                    await db.query(insertAdjustmentItemSql, [adjustmentId, sku, expectedQuantity, actualQuantity, varianceCost]);
+                    await db.query(insertAdjustmentItemSql, [adjustmentId, sku, varianceQuantity, varianceCost]);
                 }
             }
         }
@@ -210,7 +210,7 @@ router.post('/create-manifest', authenticateToken, requirePrivileged, async (req
         // Insert new manifest record
         const insertManifestSql = 'INSERT INTO Manifests (trackingNumber, createDate, status) VALUES (?, NOW(), "Shipped")';
         const [manifestResult] = await db.query(insertManifestSql, [trackingNumber]);
-        const manifestNumber = manifestResult.insertID;
+        const manifestNumber = manifestResult.insertId;
 
         // Insert manifest items
         for (const item of items) {

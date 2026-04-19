@@ -60,7 +60,7 @@ const populateReceivingContent = async () => {
 
         // Handle unauthorized access
         if (response.status === 401 || response.status === 403) {
-            handleAuthError('Unauthorized Access', 'index.html');
+            handleAuthError('You do not have permission to view this adjustment.', 'index', 'Unauthorized Access');
             return;
         }
 
@@ -89,6 +89,7 @@ const populateReceivingContent = async () => {
             <thead>
                 <tr>
                     <th>SKU</th>
+                    <th>UPC</th>
                     <th>Description</th>
                     <th>Sent Quantity</th>
                     <th>Received Quantity</th>
@@ -98,6 +99,7 @@ const populateReceivingContent = async () => {
                 ${items.map(item => `
                     <tr>
                         <td>${item.sku}</td>
+                        <td>${item.upc}</td>
                         <td>${item.description}</td>
                         <td>${item.quantity}</td>
                         <td>
@@ -160,7 +162,6 @@ const submitReceiving = async (requestContent) => {
     } catch (error) {
         console.error('Error submitting receiving data:', error);
         alert('An error occurred while submitting receiving data. Please try again later.');
-
     }
 }
 

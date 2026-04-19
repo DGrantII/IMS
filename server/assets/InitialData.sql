@@ -60,5 +60,5 @@ VALUES ('1900000', '54903', '1');
 INSERT INTO InventoryAdjustments (inventoryAdjustmentID, reason, createDate, adjustedBy)
 VALUES ('2310', 'Stolen', '2026-04-12', '3852923');
 
-INSERT INTO InventoryAdjustmentItems (inventoryAdjustmentID, sku, quantityBefore, quantityAfter, cost)
-VALUES ('2310', '1900005', '2', '1', '-249.99'); 
+INSERT INTO InventoryAdjustmentItems (inventoryAdjustmentID, sku, variance, cost)
+VALUES ('2310', '1900005', '-1', '-249.99'); 

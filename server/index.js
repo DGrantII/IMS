@@ -13,6 +13,7 @@ import queryRoutes from './routes/api/queries.js';
 import loginRoutes from './routes/api/account.js';
 import itemRoutes from './routes/api/items.js';
 import manifestRoutes from './routes/api/manifests.js';
+import adjustmentRoutes from './routes/api/adjustments.js';
 
 // Create Express app
 const app = express();
@@ -60,7 +61,7 @@ app.use('/api/queries', queryRoutes);
 app.use('/api/account', loginRoutes);
 app.use('/api/items', itemRoutes);
 app.use('/api/manifests', manifestRoutes);
-
+app.use('/api/adjustments', adjustmentRoutes);
 
 // Start server
 const PORT = process.env.PORT || 3000;

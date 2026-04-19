@@ -81,8 +81,7 @@ ALTER TABLE InventoryAdjustments AUTO_INCREMENT = 2309;
 CREATE TABLE InventoryAdjustmentItems (
 	inventoryAdjustmentID INT,
     sku INT,
-    quantityBefore INT NOT NULL,
-    quantityAfter INT NOT NULL,
+    variance INT NOT NULL,
     cost DECIMAL(10, 2) NOT NULL,
     PRIMARY KEY (inventoryAdjustmentID, sku),
     FOREIGN KEY (sku) REFERENCES Items(sku),

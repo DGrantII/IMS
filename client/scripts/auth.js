@@ -12,7 +12,7 @@ async function loadUser() {
     return user;
 }
 
-function showModal(title = 'Session Expired', message = 'Your session has expired. Please log in again.', redirectUrl = 'login.html') {
+function showModal(title = 'Session Expired', message = 'Your session has expired. Please log in again.', redirectUrl = 'login') {
     const modalElement = document.getElementById('sessionExpiredModal');
     if (!modalElement || typeof bootstrap === 'undefined') {
         alert(message);
