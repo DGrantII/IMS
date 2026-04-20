@@ -48,7 +48,7 @@ const addItemToManifest = async () => {
 
     // Validate that the item number is provided and the quantity is a valid number greater than 0
     if (!itemNumber) {
-        alert('Please enter an SKU or UPC.');
+        alert('Please enter a SKU or UPC.');
         return;
     }
 
@@ -78,7 +78,7 @@ const addItemToManifest = async () => {
         });
 
         if (response.status === 401 || response.status === 403) {
-            handleAuthError();
+            handleAuthError('You are not authorized to perform this action.', 'index', 'Not Authorized');
             return;
         }
 
@@ -141,15 +141,14 @@ const submitManifest = async () => {
 
         // Handle unauthorized access
         if (response.status === 401 || response.status === 403) {
-            handleAuthError();
+            handleAuthError('You are not authorized to perform this action.', 'index', 'Not Authorized');
             return;
         }
 
         // Check if the response indicates a successful manifest creation
         if (response.ok) {
-            alert('Manifest created successfully!');
+            showSuccessModal();
             
-            // 
         } else {
             const errorData = await response.json();
             alert(`Failed to create manifest: ${errorData.message || 'Unknown error'}`);
@@ -160,6 +159,7 @@ const submitManifest = async () => {
         alert('An error occurred while submitting the manifest. Please try again later.');
     }
 }
+document.getElementById('createBtn').addEventListener('click', submitManifest);
 
 // Function to show the success modal after receiving a manifest
 const showSuccessModal = () => {

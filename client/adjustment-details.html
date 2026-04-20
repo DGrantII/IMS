@@ -39,9 +39,10 @@
                     <h2>Suspended Adjustment</h2>
                 </div>
             </div>
-            <div class="row border px-3 mb-4">
+            <div class="row border gx-5 px-3 mb-4">
                 <div id="adjustment-content" class="col my-4"></div>
             </div>
+            <div id="button-content" class="row text-center my-4 mb-4"></div>
         </div>
     </main>
 
@@ -78,6 +79,24 @@
         </div>
     </div>
 
+    <!-- Suspend Adjustment Modal -->
+    <div class="modal fade" id="suspendAdjustmentModal" tabindex="-1" aria-labelledby="suspendAdjustmentModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="suspendAdjustmentModalLabel">Suspend Adjustment</h5>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to suspend this adjustment?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="confirmSuspendBtn">Suspend</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Delete Adjustment Modal -->
     <div class="modal fade" id="deleteAdjustmentModal" tabindex="-1" aria-labelledby="deleteAdjustmentModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
@@ -104,7 +123,7 @@
                     <h5 class="modal-title" id="successModalLabel">Success</h5>
                 </div>
                 <div class="modal-body">
-                    <p id="successMessage">Adjustment completed successfully.</p>
+                    <p id="successMessage">Action completed successfully.</p>
                 </div>
                 <div class="modal-footer">
                     <button type="button" id="successModalOk" class="btn btn-primary" data-bs-dismiss="modal">OK</button>

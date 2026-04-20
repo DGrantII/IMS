@@ -104,14 +104,26 @@ const populateAdjustmentContent = async () => {
                 `).join('')}
             </tbody>
         </table>
-        <button class="btn btn-danger w-25 float-start mt-3" id="deleteAdjustmentBtn">Delete Adjustment</button>
-        <button class="btn btn-primary w-25 float-end mt-3" id="completeAdjustmentBtn">Complete Adjustment</button>
+        `;
+
+        let buttonOutput = `
+            <div class="col">
+                <button class="btn btn-danger" id="deleteAdjustmentBtn">Delete Adjustment</button>
+            </div>
+            <div class="col">
+                <button class="col-sm-auto btn btn-secondary" id="cancelAdjustmentBtn">Suspend Adjustment</button>
+            </div>
+            <div class="col">
+                <button class="col-sm-auto btn btn-primary" id="completeAdjustmentBtn">Complete Adjustment</button>
+            </div>
         `;
 
         // Insert content into page and add event listener to complete adjustment button
         document.getElementById('adjustment-content').innerHTML = output;
+        document.getElementById('button-content').innerHTML = buttonOutput;
         document.getElementById('completeAdjustmentBtn').addEventListener('click', showCompleteModal);
         document.getElementById('deleteAdjustmentBtn').addEventListener('click', showDeleteModal);
+        document.getElementById('cancelAdjustmentBtn').addEventListener('click', showSuspendModal);
         updateCompleteButtonState();
     } catch (error) {
         console.error('Error fetching adjustment details:', error);
@@ -159,6 +171,24 @@ const showCompleteModal = () => {
     confirmModal.show();
 }
 
+// Function to show modal for inventory adjustment suspension
+const showSuspendModal = () => {
+    const modalElement = document.getElementById('suspendAdjustmentModal');
+    const confirmButton = document.getElementById('confirmSuspendBtn');
+    const suspendModal = new bootstrap.Modal(modalElement);
+    confirmButton.onclick = async () => {
+        suspendModal.hide();
+        const result = await suspendAdjustment();
+        if (result.success) {
+            showSuccessModal();
+        } else {
+            alert('Failed to suspend adjustment. Please try again later.');
+        }
+    }
+    suspendModal.show();
+}
+
+
 // Function to get the data from the adjustment table
 const getAdjustmentData = () => {
     const adjustmentTable = document.getElementById('adjustment-items-table');
@@ -198,6 +228,32 @@ const completeAdjustment = async () => {
         console.error('Error completing adjustment:', error);
         alert('An error occurred while submitting receiving data. Please try again later.');
     }
+}
+
+// Function to suspend the adjustment
+const suspendAdjustment = async () => {
+    const adjustmentItems = getAdjustmentData();
+    const urlParams = new URLSearchParams(window.location.search);
+    const adjustmentNumber = urlParams.get('adjustmentNumber');
+    try {
+        const response = await fetch(`api/adjustments/suspend-adjustment`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            credentials: 'include',
+            body: JSON.stringify({
+                adjustmentNumber,
+                adjustmentItems
+            })
+        });
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('Error suspending adjustment:', error);
+        alert('An error occurred while suspending the adjustment. Please try again later.');
+    }
+
 }
 
 // Function to show the success modal after completing the adjustment

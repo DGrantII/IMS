@@ -5,7 +5,7 @@ import authenticateToken from '../../middleware/auth.js';
 const router = Router();
 
 function requirePrivileged(req, res, next) {
-  if (req.user.role !== "Privileged") {
+  if (req.user.role !== "Privileged" && req.user.role !== "Admin") {
     return res.status(403).json({ error: "Forbidden" });
   }
   next();
@@ -195,7 +195,7 @@ router.post('/receive-manifest', authenticateToken, async (req, res) => {
 // Expected request body: { trackingNumber: "ABC123", items: [{ sku: "456", quantity: 10 }] }
 router.post('/create-manifest', authenticateToken, requirePrivileged, async (req, res) => {
     try {
-        const { trackingNumber, items } = req.body;
+        let { trackingNumber, items } = req.body;
         if (!items || !Array.isArray(items) || items.length === 0) {
             return res.status(400).json({ error: 'At least one item is required to create a manifest' });
         }

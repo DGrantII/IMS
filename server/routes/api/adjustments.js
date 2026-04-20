@@ -203,4 +203,91 @@ router.post('/delete-adjustment', async (req, res) => {
     }
 });
 
+// Route to suspend an adjustment (update inventory ajustment items without changing inventory quantities)
+// Expected request body: { adjustmentNumber: "123", adjustmentItems: [{ sku: "ABC123", variance: 5, cost: 50.00 }] }
+router.post('/suspend-adjustment', async (req, res) => {
+    const { adjustmentNumber, adjustmentItems } = req.body;
+    try {
+        // Start a transaction
+        await db.beginTransaction();
+
+        // Update the inventory adjustment items without changing inventory quantities
+        for (const item of adjustmentItems) {
+            await db.query(
+                'UPDATE InventoryAdjustmentItems SET variance = ?, cost = ? WHERE inventoryAdjustmentID = ? AND sku = ?',
+                [item.variance, item.cost, adjustmentNumber, item.sku]
+            );
+        }
+
+        // Update the adjustment status to "Suspended"
+        await db.query(
+            'UPDATE InventoryAdjustments SET status = ? WHERE inventoryAdjustmentID = ?',
+            ['Suspended', adjustmentNumber]
+        );
+
+        // Commit the transaction
+        await db.commit();
+
+        res.json({ success: true });
+
+    } catch (error) {
+        console.error('Error suspending adjustment:', error);
+        await db.rollback();
+        res.status(500).json({ success: false, message: 'Error suspending adjustment' });
+    }
+});
+
+// Route to create a new adjustment
+// Expected request body: { 
+//  reason: "A reason",
+//  status: "Either 'Suspended' or 'Completed'",
+//  adjustmentItems: [{ sku: "ABC123", variance: 5, cost: 50.00 }] }
+router.post('/create-adjustment', authenticateToken, requirePrivileged, async (req, res) => {
+    const { reason, status, adjustmentItems } = req.body;
+
+    try {
+        // Start a transaction
+        await db.beginTransaction();
+
+        // Insert the new adjustment
+        const result = await db.query(
+            `INSERT INTO InventoryAdjustments (reason, status, createDate, adjustedBy)
+            VALUES (?, ?, NOW(), ?)`,
+            [reason, status, req.user.employeeID]
+        );
+
+        const adjustmentNumber = result[0].insertId;
+
+        // Insert the adjustment items
+        for (const item of adjustmentItems) {
+            await db.query(
+                `INSERT INTO InventoryAdjustmentItems (inventoryAdjustmentID, sku, variance, cost)
+                VALUES (?, ?, ?, ?)`,
+                [adjustmentNumber, item.sku, item.variance, item.cost]
+            );
+        }
+
+        // If the adjustment status is "Completed", update the inventory quantities
+        if (status.toLowerCase() === 'completed') {
+            for (const item of adjustmentItems) {
+                await db.query(
+                    'UPDATE Items SET AvailableQuantity = AvailableQuantity + ? WHERE sku = ?',
+                    [item.variance, item.sku]
+                );
+            }
+        }
+
+        // Commit the transaction
+        await db.commit();
+
+        res.json({ success: true, adjustmentNumber });
+
+    } catch (error) {
+        console.error('Error creating adjustment:', error);
+        await db.rollback();
+        res.status(500).json({ success: false, message: 'Error creating adjustment' });
+    }
+
+});
+
 export default router;
