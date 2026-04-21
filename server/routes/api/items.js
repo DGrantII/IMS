@@ -4,8 +4,15 @@ import authenticateToken from '../../middleware/auth.js';
 
 const router = Router();
 
-function requirePrivileged(req, res, next) {
+const requirePrivileged = (req, res, next) => {
   if (req.user.role !== "Privileged") {
+    return res.status(403).json({ error: "Forbidden" });
+  }
+  next();
+}
+
+const requireAdmin = (req, res, next) => {
+  if (req.user.role !== "Admin") {
     return res.status(403).json({ error: "Forbidden" });
   }
   next();
@@ -67,6 +74,49 @@ router.get('/search-item', authenticateToken, async (req, res) => {
     } catch (err) {
         console.error('Error executing search query:', err);
         res.status(500).send('Error executing search query');
+    }
+});
+
+// Route to create a new item
+// Expected request body: {
+//   upc: '12345',
+//   description: 'Sample item description',
+//   model: 'Sample model',
+//   brand: 'Sample brand',
+//   price: '19.99'
+// }
+router.post('/create-item', authenticateToken, requireAdmin, async (req, res) => {
+    try {
+        const { upc, description, model, brand, price } = req.body;
+
+        // Validate required fields
+        if (!upc || !description || !model || !brand || !price) {
+            return res.status(400).json({ error: 'Missing required fields' });
+        }
+
+        // Validate price
+        const priceNumber = parseFloat(price);
+        if (isNaN(priceNumber) || priceNumber < 0) {
+            return res.status(400).json({ error: 'Invalid price' });
+        }
+
+        // Check if an item with the same UPC already exists
+        const [existingItems] = await db.query('SELECT * FROM Items WHERE upc = ?', [upc]);
+        if (existingItems.length > 0) {
+            return res.status(400).json({ error: 'Item with the same UPC already exists' });
+        }
+
+        // Insert the new item into the database
+        const sql = 'INSERT INTO Items (upc, description, model, brand, price) VALUES (?, ?, ?, ?, ?)';
+        const placeholders = [upc, description, model, brand, price];
+
+        const [result] = await db.query(sql, placeholders);
+
+        res.status(201).json({ message: 'Item created successfully', itemId: result.insertId });
+
+    } catch (err) {
+        console.error('Error creating item:', err);
+        res.status(500).send('Error creating item');
     }
 });
 

@@ -192,7 +192,7 @@ const populateManifestTable = (manifest, items) => {
     }
 };
 
-
+// Function to create manifest button for admin users
 const createManifestButton = async () => {
     const userRole = await getUserRole();
     if (userRole.toLowerCase() === 'admin') {
