@@ -6,7 +6,7 @@ window.addEventListener('DOMContentLoaded', async () => {
 
     // If not logged in, show session expired modal and redirect to login page
     if (!user) {
-        handleAuthError('Your session has expired due to inactivity. Please log in again.', 'login');
+        handleAuthError('Your session has expired due to inactivity. Please log in again.', 'login', 'Session Expired');
         return;
     }
 

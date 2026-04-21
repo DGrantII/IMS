@@ -39,7 +39,7 @@ searchForm.addEventListener('submit', async function(event) {
             credentials: 'include'
         });
         if (response.status === 401 || response.status === 403) {
-            handleAuthError();
+            handleAuthError('You do not have access. Redirecting to home page.', 'index', 'Access Denied');
             return;
         }
         const data = await response.json();
@@ -80,7 +80,7 @@ const fetchItemDetails = async (sku) => {
             credentials: 'include'
         });
         if (response.status === 401 || response.status === 403) {
-            handleAuthError();
+            handleAuthError('You do not have access. Redirecting to home page.', 'index', 'Access Denied');
             return;
         }
         const data = await response.json();

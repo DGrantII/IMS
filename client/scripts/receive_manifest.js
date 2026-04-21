@@ -60,7 +60,7 @@ const populateReceivingContent = async () => {
 
         // Handle unauthorized access
         if (response.status === 401 || response.status === 403) {
-            handleAuthError('You do not have permission to view this adjustment.', 'index', 'Unauthorized Access');
+            handleAuthError('You do not have access. Redirecting to home page.', 'index', 'Access Denied');
             return;
         }
 

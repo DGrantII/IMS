@@ -4,7 +4,7 @@
 window.addEventListener('DOMContentLoaded', async () => {
     const user = await loadUser();
     if (!user) {
-        handleAuthError('Your session has expired due to inactivity. Please log in again.', 'login.html');
+        handleAuthError('Your session has expired due to inactivity. Please log in again.', 'login', 'Session Expired');
         return;
     }
     // If logged in, proceed to load the page

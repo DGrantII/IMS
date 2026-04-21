@@ -99,6 +99,7 @@ router.get('/search-adjustment', authenticateToken, requirePrivileged, async (re
                     Items.price,
                     (Items.availableQuantity + Items.orderQuantity) AS quantityBefore,
                     (Items.availableQuantity + Items.orderQuantity + InventoryAdjustmentItems.variance) AS quantityAfter,
+                    InventoryAdjustmentItems.variance,
                     InventoryAdjustmentItems.cost
                 FROM InventoryAdjustmentItems
                 JOIN Items ON InventoryAdjustmentItems.sku = Items.sku
@@ -120,7 +121,7 @@ router.get('/search-adjustment', authenticateToken, requirePrivileged, async (re
 
 // Route to complete an adjustment (update status to "Completed" and adjust inventory quantities accordingly)
 // Expected request body: { adjustmentNumber: "123", adjustmentItems: [{ sku: "ABC123", variance: 5, cost: 50.00 }] }
-router.post('/complete-adjustment', async (req, res) => {
+router.post('/complete-adjustment', authenticateToken, requirePrivileged, async (req, res) => {
     const { adjustmentNumber, adjustmentItems } = req.body;
     try {
         // Start a transaction
@@ -139,10 +140,10 @@ router.post('/complete-adjustment', async (req, res) => {
             );
         }
 
-        // Update the adjustment status to "Completed"
+        // Update the adjustment status to "Completed" and who completed it
         await db.query(
-            'UPDATE InventoryAdjustments SET status = ? WHERE inventoryAdjustmentID = ?',
-            ['Completed', adjustmentNumber]
+            'UPDATE InventoryAdjustments SET status = ?, adjustedBy = ? WHERE inventoryAdjustmentID = ?',
+            ['Completed', req.user.employeeID, adjustmentNumber]
         );
 
         // Commit the transaction
@@ -157,7 +158,7 @@ router.post('/complete-adjustment', async (req, res) => {
 });
 
 // Route to delete an adjustment (removing it entirely from the database)
-router.post('/delete-adjustment', async (req, res) => {
+router.post('/delete-adjustment', authenticateToken, requirePrivileged, async (req, res) => {
     const { adjustmentNumber } = req.body;
     try {
 
@@ -205,7 +206,7 @@ router.post('/delete-adjustment', async (req, res) => {
 
 // Route to suspend an adjustment (update inventory ajustment items without changing inventory quantities)
 // Expected request body: { adjustmentNumber: "123", adjustmentItems: [{ sku: "ABC123", variance: 5, cost: 50.00 }] }
-router.post('/suspend-adjustment', async (req, res) => {
+router.post('/suspend-adjustment', authenticateToken, requirePrivileged, async (req, res) => {
     const { adjustmentNumber, adjustmentItems } = req.body;
     try {
         // Start a transaction

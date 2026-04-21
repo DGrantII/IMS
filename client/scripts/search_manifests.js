@@ -64,6 +64,12 @@ manifestForm.addEventListener('submit', async (e) => {
     const createDateEnd = document.getElementById('createDateEnd').value;
     const status = document.getElementById('status').value;
 
+    // Checking if at least one search parameter is provided
+    if (!manifestNumber && !trackingNumber && !itemNumber && !createDateStart && !createDateEnd && !status) {
+        alert('Please provide at least one search parameter.');
+        return;
+    }
+
     let queryParams = [];
     if (manifestNumber) queryParams.push(`manifestNumber=${encodeURIComponent(manifestNumber)}`);
     if (trackingNumber) queryParams.push(`trackingNumber=${encodeURIComponent(trackingNumber)}`);
@@ -128,7 +134,7 @@ const fetchManifestDetails = async (manifestNumber) => {
             credentials: 'include'
         });
         if (response.status === 401 || response.status === 403) {
-            handleAuthError();
+            handleAuthError('You do not have access. Redirecting to home page.', 'index', 'Access Denied');
             return;
         }
         const data = await response.json();

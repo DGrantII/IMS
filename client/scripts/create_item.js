@@ -35,7 +35,7 @@ const createItem = async () => {
         });
 
         if (response.status === 401 || response.status === 403) {
-            handleAuthError('You are not authorized to perform this action.', 'index', 'Not Authorized');
+            handleAuthError('You do not have access. Redirecting to home page.', 'index', 'Access Denied');
             return;
         }
 

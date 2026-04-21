@@ -212,12 +212,15 @@ router.post('/create-manifest', authenticateToken, requirePrivileged, async (req
         const [manifestResult] = await db.query(insertManifestSql, [trackingNumber]);
         const manifestNumber = manifestResult.insertId;
 
-        // Insert manifest items
+        // Insert manifest items and adjust the inTransit field for each item
         for (const item of items) {
             const { sku, quantity } = item;
             const insertManifestItemSql = 'INSERT INTO ManifestItems (manifestNumber, sku, quantity) VALUES (?, ?, ?)';
             await db.query(insertManifestItemSql, [manifestNumber, sku, quantity]);
+            const updateInTransitSql = 'UPDATE Items SET inTransit = inTransit + ? WHERE sku = ?';
+            await db.query(updateInTransitSql, [quantity, sku]);
         }
+
 
         // Commit transaction
         await db.commit();

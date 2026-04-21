@@ -115,7 +115,7 @@ const fetchAdjustmentDetails = async (adjustmentNumber) => {
             credentials: 'include'
         });
         if (response.status === 401 || response.status === 403) {
-            handleAuthError();
+            handleAuthError('You do not have access. Redirecting to home page.', 'index', 'Access Denied');
             return;
         }
         const data = await response.json();
@@ -147,8 +147,7 @@ const populateAdjustmentTable = (adjustment, items) => {
                 <th>SKU</th>
                 <th>UPC</th>
                 <th>Description</th>
-                <th>Quantity Before</th>
-                <th>Quantity After</th>
+                <th>Variance</th>
                 <th>Cost</th>
             </tr>
         </thead>
@@ -160,8 +159,7 @@ const populateAdjustmentTable = (adjustment, items) => {
                 <td>${item.sku}</td>
                 <td>${item.upc}</td>
                 <td>${item.description}</td>
-                <td>${item.quantityBefore}</td>
-                <td>${item.quantityAfter}</td>
+                <td>${item.variance}</td>
                 <td>${item.cost}</td>
             </tr>
         `;
