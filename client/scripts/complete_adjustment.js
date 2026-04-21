@@ -66,7 +66,9 @@ const populateAdjustmentContent = async () => {
                 <tr><th>Create Date</th><td>${new Date(adjustment.createDate).toLocaleDateString()}</td></tr>
                 <tr><th>Status</th><td>${adjustment.status}</td></tr>
                 <tr><th>Adjusted By</th><td>${adjustment.adjustedBy || 'N/A'}</td></tr>
-                <tr><th>Reason</th><td>${adjustment.reason || 'N/A'}</td></tr>
+                <tr><th>Reason</th><td>
+                    <textarea class="form-control" rows="3" id="adjustmentReason">${adjustment.reason || 'N/A'}</textarea>
+                </td></tr>
                 <tr><th>Total Cost</th><td>$${initialTotalCost.toFixed(2)}</td></tr>
             </tbody>
         </table>
@@ -210,6 +212,7 @@ const completeAdjustment = async () => {
     const adjustmentItems = getAdjustmentData();
     const urlParams = new URLSearchParams(window.location.search);
     const adjustmentNumber = urlParams.get('adjustmentNumber');
+    const adjustmentReason = document.getElementById('adjustmentReason').value.trim();
     try {
         const response = await fetch(`api/adjustments/complete-adjustment`, {
             method: 'POST',
@@ -219,7 +222,8 @@ const completeAdjustment = async () => {
             credentials: 'include',
             body: JSON.stringify({
                 adjustmentNumber,
-                adjustmentItems
+                adjustmentItems,
+                adjustmentReason
             })
         });
         const data = await response.json();
@@ -235,6 +239,7 @@ const suspendAdjustment = async () => {
     const adjustmentItems = getAdjustmentData();
     const urlParams = new URLSearchParams(window.location.search);
     const adjustmentNumber = urlParams.get('adjustmentNumber');
+    const adjustmentReason = document.getElementById('adjustmentReason').value.trim();
     try {
         const response = await fetch(`api/adjustments/suspend-adjustment`, {
             method: 'POST',
@@ -244,7 +249,8 @@ const suspendAdjustment = async () => {
             credentials: 'include',
             body: JSON.stringify({
                 adjustmentNumber,
-                adjustmentItems
+                adjustmentItems,
+                adjustmentReason
             })
         });
         const data = await response.json();

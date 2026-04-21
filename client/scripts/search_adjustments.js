@@ -38,6 +38,20 @@ createDateEnd.addEventListener('input', updateDisabled);
 status.addEventListener('change', updateDisabled);
 itemNumber.addEventListener('input', updateDisabled);
 
+// Create a function to clear the search form
+const clearForm = () => {
+    adjustmentNumber.value = '';
+    createDateStart.value = '';
+    createDateEnd.value = '';
+    status.value = '';
+    itemNumber.value = '';
+    updateDisabled();
+}
+
+// Attach event listener to the clear button
+const clearButton = document.getElementById('clearButton');
+clearButton.addEventListener('click', clearForm);
+
 const adjustmentForm = document.querySelector('#adjustmentForm');
 adjustmentForm.addEventListener('submit', async (e) => {
     e.preventDefault();

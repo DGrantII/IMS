@@ -30,6 +30,7 @@ router.get('/search-item', authenticateToken, async (req, res) => {
         // Extracting search term and column from query parameters
         const searchTerm = req.query.v;
         const column = req.query.q;
+        console.log(column);
 
         // Initialize SQL query and placeholders based on the search column
         let sql, placeholders;
@@ -45,10 +46,6 @@ router.get('/search-item', authenticateToken, async (req, res) => {
             // For description, model, and brand, we want to search for a partial match using LIKE
             sql = `SELECT Items.sku, Items.description FROM Items WHERE ${column} LIKE ?`;
             placeholders = [`%${searchTerm}%`];
-        } else {
-
-            // If the column is not valid, throw an error
-            throw new Error('Invalid search column');
         }
 
         // Execute the SQL query with the appropriate placeholders

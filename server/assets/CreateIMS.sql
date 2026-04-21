@@ -12,6 +12,7 @@ CREATE TABLE Employees (
 CREATE TABLE Items (
 	sku INT AUTO_INCREMENT PRIMARY KEY,
     upc VARCHAR(50) NOT NULL,
+    status ENUM('Active', 'Deleted', 'Discontinued') DEFAULT 'Active',
     model VARCHAR(50) NOT NULL,
     brand VARCHAR(50) NOT NULL,
     description VARCHAR(255) NOT NULL,

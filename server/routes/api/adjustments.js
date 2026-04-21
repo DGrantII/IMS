@@ -122,7 +122,7 @@ router.get('/search-adjustment', authenticateToken, requirePrivileged, async (re
 // Route to complete an adjustment (update status to "Completed" and adjust inventory quantities accordingly)
 // Expected request body: { adjustmentNumber: "123", adjustmentItems: [{ sku: "ABC123", variance: 5, cost: 50.00 }] }
 router.post('/complete-adjustment', authenticateToken, requirePrivileged, async (req, res) => {
-    const { adjustmentNumber, adjustmentItems } = req.body;
+    const { adjustmentNumber, adjustmentItems, adjustmentReason } = req.body;
     try {
         // Start a transaction
         await db.beginTransaction();
@@ -142,8 +142,8 @@ router.post('/complete-adjustment', authenticateToken, requirePrivileged, async 
 
         // Update the adjustment status to "Completed" and who completed it
         await db.query(
-            'UPDATE InventoryAdjustments SET status = ?, adjustedBy = ? WHERE inventoryAdjustmentID = ?',
-            ['Completed', req.user.employeeID, adjustmentNumber]
+            'UPDATE InventoryAdjustments SET status = ?, adjustedBy = ?, reason = ? WHERE inventoryAdjustmentID = ?',
+            ['Completed', req.user.employeeID, adjustmentReason, adjustmentNumber]
         );
 
         // Commit the transaction
@@ -207,7 +207,7 @@ router.post('/delete-adjustment', authenticateToken, requirePrivileged, async (r
 // Route to suspend an adjustment (update inventory ajustment items without changing inventory quantities)
 // Expected request body: { adjustmentNumber: "123", adjustmentItems: [{ sku: "ABC123", variance: 5, cost: 50.00 }] }
 router.post('/suspend-adjustment', authenticateToken, requirePrivileged, async (req, res) => {
-    const { adjustmentNumber, adjustmentItems } = req.body;
+    const { adjustmentNumber, adjustmentItems, adjustmentReason } = req.body;
     try {
         // Start a transaction
         await db.beginTransaction();
@@ -222,8 +222,8 @@ router.post('/suspend-adjustment', authenticateToken, requirePrivileged, async (
 
         // Update the adjustment status to "Suspended"
         await db.query(
-            'UPDATE InventoryAdjustments SET status = ? WHERE inventoryAdjustmentID = ?',
-            ['Suspended', adjustmentNumber]
+            'UPDATE InventoryAdjustments SET status = ?, reason = ? WHERE inventoryAdjustmentID = ?',
+            ['Suspended', adjustmentReason, adjustmentNumber]
         );
 
         // Commit the transaction

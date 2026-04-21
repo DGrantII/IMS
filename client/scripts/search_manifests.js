@@ -7,7 +7,7 @@ const createDateEnd = document.getElementById('createDateEnd');
 const status = document.getElementById('status');
 
 // Function to update disabled state of fields
-function updateDisabled() {
+const updateDisabled = () => {
     const hasManifestOrTracking = manifestNumber.value.trim() || trackingNumber.value.trim();
     const hasOther = itemNumber.value.trim() || createDateStart.value || createDateEnd.value || status.value;
 
@@ -53,6 +53,21 @@ itemNumber.addEventListener('input', updateDisabled);
 createDateStart.addEventListener('input', updateDisabled);
 createDateEnd.addEventListener('input', updateDisabled);
 status.addEventListener('change', updateDisabled);
+
+// Create a function to clear the search form
+const clearForm = () => {
+    manifestNumber.value = '';
+    trackingNumber.value = '';
+    itemNumber.value = '';
+    createDateStart.value = '';
+    createDateEnd.value = '';
+    status.value = '';
+    updateDisabled();
+}
+
+// Attach event listener to the clear button
+const clearButton = document.getElementById('clearButton');
+clearButton.addEventListener('click', clearForm);
 
 const manifestForm = document.querySelector('#manifestForm');
 manifestForm.addEventListener('submit', async (e) => {

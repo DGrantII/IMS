@@ -1,7 +1,11 @@
+// Script to handle searching for items in the inventory
+
+// Obtain references to the search form and its input fields
 const searchForm = document.querySelector('#searchForm');
 const fields = Array.from(searchForm.querySelectorAll('input[type="text"]'));
 
-function updateFieldStates() {
+// Function to update the state of the input fields based on user input
+const updateFieldStates = () => {
     const filledField = fields.find(field => field.value.trim() !== '');
     if (filledField) {
         fields.forEach(field => {
@@ -16,10 +20,22 @@ function updateFieldStates() {
     }
 }
 
+// Attach event listeners to input fields to update their states
 fields.forEach(field => {
     field.addEventListener('input', updateFieldStates);
 });
 
+// Create a function to clear the search form
+const clearForm = () => {
+    fields.forEach(field => field.value = '');
+    updateFieldStates();
+}
+
+// Attach event listener to the clear button
+const clearButton = document.getElementById('clearButton');
+clearButton.addEventListener('click', clearForm);
+
+// Attach event listener to the search form to handle submissions
 searchForm.addEventListener('submit', async function(event) {
     event.preventDefault();
 
@@ -72,6 +88,7 @@ searchForm.addEventListener('submit', async function(event) {
     }
 });
 
+// Function to fetch item details by SKU
 const fetchItemDetails = async (sku) => {
     const url = `/api/items/search-item?q=itemNumber&v=${encodeURIComponent(sku)}`;
     try {
@@ -91,7 +108,7 @@ const fetchItemDetails = async (sku) => {
     }
 };
 
-
+// Function to populate the item table with details
 const populateItemTable = (item) => {
     let output = `
     <h3>Product Details</h3>

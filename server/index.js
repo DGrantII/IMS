@@ -63,6 +63,16 @@ app.use('/api/items', itemRoutes);
 app.use('/api/manifests', manifestRoutes);
 app.use('/api/adjustments', adjustmentRoutes);
 
+// API fallback for unknown endpoints
+app.use('/api', (req, res) => {
+    res.status(404).json({ error: 'API endpoint not found' });
+});
+
+// Client fallback for unknown routes
+app.use((req, res) => {
+    res.status(404).sendFile(path.join(__dirname, '../client/404.html'));
+});
+
 // Start server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
