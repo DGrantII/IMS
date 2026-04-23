@@ -19,6 +19,11 @@ img#logo {
     height: auto;
 }
 
+.icon-link {
+    color: #001A4E !important;
+    text-decoration-color: #001A4E !important;
+}
+
 /* Dark Blue Background color */
 body.login-page {
     background-color: #001A4E;

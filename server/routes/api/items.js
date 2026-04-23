@@ -5,7 +5,7 @@ import authenticateToken from '../../middleware/auth.js';
 const router = Router();
 
 const requirePrivileged = (req, res, next) => {
-  if (req.user.role !== "Privileged") {
+  if (req.user.role !== "Privileged" && req.user.role !== "Admin") {
     return res.status(403).json({ error: "Forbidden" });
   }
   next();
@@ -116,5 +116,49 @@ router.post('/create-item', authenticateToken, requireAdmin, async (req, res) =>
         res.status(500).send('Error creating item');
     }
 });
+
+// Route to modify an existing item
+// Expected request body: {
+//   upc: '12345',
+//   description: 'Updated item description',
+//   model: 'Updated model',
+//   brand: 'Updated brand',
+//   price: '29.99'
+// }
+router.put('/modify-item', authenticateToken, requireAdmin, async (req, res) => {
+    try {
+        const { upc, description, model, brand, price } = req.body;
+
+        // Validate required fields
+        if (!upc || !description || !model || !brand || !price) {
+            return res.status(400).json({ error: 'Missing required fields' });
+        }
+
+        // Validate price
+        const priceNumber = parseFloat(price);
+        if (isNaN(priceNumber) || priceNumber < 0) {
+            return res.status(400).json({ error: 'Invalid price' });
+        }
+
+        // Check if the item exists
+        const [existingItems] = await db.query('SELECT * FROM Items WHERE upc = ?', [upc]);
+        if (existingItems.length === 0) {
+            return res.status(404).json({ error: 'Item not found' });
+        }
+
+        // Update the item in the database
+        const sql = 'UPDATE Items SET description = ?, model = ?, brand = ?, price = ? WHERE upc = ?';
+        const placeholders = [description, model, brand, price, upc];
+
+        await db.query(sql, placeholders);
+
+        res.status(200).json({ message: 'Item modified successfully' });
+
+    } catch (err) {
+        console.error('Error modifying item:', err);
+        res.status(500).send('Error modifying item');
+    }
+});
+
 
 export default router;

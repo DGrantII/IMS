@@ -111,11 +111,18 @@ const fetchItemDetails = async (sku) => {
 // Function to populate the item table with details
 const populateItemTable = (item) => {
     let output = `
-    <h3>Product Details</h3>
+    <div class='row'>
+        <div class='col'>
+            <h3>Product Details</h3>
+        </div>
+        <div class="col text-end" id="modifyButtonWrapper"></div>
+    </div>
+    
     <table id="item-table" class="table table-striped">
         <tbody>
         <tr><th scope="row">SKU:</th><td id="item-sku">${item.sku || 'N/A'}</td></tr>
         <tr><th scope="row">UPC:</th><td id="item-upc">${item.upc || 'N/A'}</td></tr>
+        <tr><th scope="row">Status:</th><td id="item-status">${item.status || 'N/A'}</td></tr>
         <tr><th scope="row">Model Number:</th><td id="item-model-number">${item.model || 'N/A'}</td></tr>
         <tr><th scope="row">Brand:</th><td id="item-brand">${item.brand || 'N/A'}</td></tr>
         <tr><th scope="row">Description:</th><td id="item-description">${item.description || 'N/A'}</td></tr>
@@ -130,9 +137,11 @@ const populateItemTable = (item) => {
     itemContent.innerHTML = output;
     itemContent.scrollIntoView({ behavior: 'smooth' });
     itemContent.focus();
+
+    createModifyButton(item.sku);
 };
 
-// Function for creating item button for admin users
+// Function for adding the create item button for admin users
 const createItemButton = async () => {
     const userRole = await getUserRole();
     if (userRole.toLowerCase() === 'admin') {
@@ -152,3 +161,24 @@ const createItemButton = async () => {
     }
 };
 document.addEventListener('DOMContentLoaded', createItemButton);
+
+// Function for adding the modify item button for admin users
+const createModifyButton = async (sku) => {
+    const userRole = await getUserRole();
+    if (userRole.toLowerCase() === 'admin') {
+        const modifyButton = document.createElement('a');
+        modifyButton.className = 'icon-link';
+        modifyButton.href = `./modify-item?sku=${encodeURIComponent(sku)}`;
+        modifyButton.innerHTML = `
+                        Edit
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
+                            <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
+                            <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"/>
+                        </svg>
+        `;
+        modifyButton.addEventListener('click', () => {
+            window.location.href = `./modify-item?sku=${encodeURIComponent(sku)}`;
+        });
+        document.getElementById('modifyButtonWrapper').appendChild(modifyButton);
+    }
+};
