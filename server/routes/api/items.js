@@ -30,7 +30,6 @@ router.get('/search-item', authenticateToken, async (req, res) => {
         // Extracting search term and column from query parameters
         const searchTerm = req.query.v;
         const column = req.query.q;
-        console.log(column);
 
         // Initialize SQL query and placeholders based on the search column
         let sql, placeholders;

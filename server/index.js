@@ -9,7 +9,7 @@ import fs from 'fs';
 
 // Routes
 import testingRoutes from './routes/api/testing.js';
-import queryRoutes from './routes/api/queries.js';
+import dashboardRoutes from './routes/api/dashboard.js';
 import loginRoutes from './routes/api/account.js';
 import itemRoutes from './routes/api/items.js';
 import manifestRoutes from './routes/api/manifests.js';
@@ -57,7 +57,7 @@ db.connect(err => {
 });
 
 app.use('/api/testing', testingRoutes);
-app.use('/api/queries', queryRoutes);
+app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/account', loginRoutes);
 app.use('/api/items', itemRoutes);
 app.use('/api/manifests', manifestRoutes);
