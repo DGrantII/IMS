@@ -36,7 +36,7 @@ const clearButton = document.getElementById('clearButton');
 clearButton.addEventListener('click', clearForm);
 
 // Attach event listener to the search form to handle submissions
-searchForm.addEventListener('submit', async function(event) {
+searchForm.addEventListener('submit', async (event) => {
     event.preventDefault();
 
     const filledField = fields.find(field => field.value.trim() !== '');

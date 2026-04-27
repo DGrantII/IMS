@@ -1,5 +1,5 @@
 // nav.js - Dynamic navigation creation and active link setting
-async function getUserRole() {
+const getUserRole = async () => {
     try {
         const res = await fetch('/api/account/me', {
             credentials: 'include'
@@ -12,7 +12,7 @@ async function getUserRole() {
     }
 }
 
-async function createNav() {
+const createNav = async () => {
     const navItems = [
         { text: 'Home', href: './', page: 'index' },
         { text: 'Products', href: './products', page: 'products' },

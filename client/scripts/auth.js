@@ -1,4 +1,4 @@
-async function loadUser() {
+const loadUser = async () => {
     const res = await fetch('/api/account/me', {
         credentials: 'include'
     });
@@ -12,7 +12,7 @@ async function loadUser() {
     return user;
 }
 
-function showModal(title = 'Session Expired', message = 'Your session has expired. Please log in again.', redirectUrl = 'login') {
+const showModal = (title = 'Session Expired', message = 'Your session has expired. Please log in again.', redirectUrl = 'login') => {
     const modalElement = document.getElementById('sessionExpiredModal');
     if (!modalElement || typeof bootstrap === 'undefined') {
         alert(message);
@@ -36,6 +36,6 @@ function showModal(title = 'Session Expired', message = 'Your session has expire
     sessionModal.show();
 }
 
-function handleAuthError(message, redirectUrl, title = 'Session Expired') {
+const handleAuthError = (message, redirectUrl, title = 'Session Expired') => {
     showModal(title, message, redirectUrl);
 }

@@ -4,13 +4,13 @@ const LOGIN_EXPIRATION_MS = 5 * 60 * 1000; // 5 minutes
 let loginExpired = false;
 let loginExpirationTimer = null;
 
-function disableLoginForm() {
+const disableLoginForm = () => {
     document.getElementById('employeeID').disabled = true;
     document.getElementById('password').disabled = true;
     document.querySelector('#loginForm button[type="submit"]').disabled = true;
 }
 
-function showSessionExpiredModal() {
+const showSessionExpiredModal = () => {
     const modalElement = document.getElementById('sessionExpiredModal');
     if (!modalElement) {
         alert('Your login session has expired. Please refresh the page to try again.');
@@ -26,12 +26,12 @@ function showSessionExpiredModal() {
     disableLoginForm();
 }
 
-function expireLoginSession() {
+const expireLoginSession = () => {
     loginExpired = true;
     showSessionExpiredModal();
 }
 
-function startLoginExpirationTimer() {
+const startLoginExpirationTimer = () => {
     if (loginExpirationTimer) {
         clearTimeout(loginExpirationTimer);
     }
@@ -41,7 +41,7 @@ function startLoginExpirationTimer() {
 document.addEventListener('DOMContentLoaded', () => {
     startLoginExpirationTimer();
 
-    document.getElementById('loginForm').addEventListener('submit', function(event) {
+    document.getElementById('loginForm').addEventListener('submit', (event) => {
         event.preventDefault();
 
         if (loginExpired) {
