@@ -3,7 +3,7 @@ import bcrypt from 'bcrypt';
 import { db } from '../../db.js';
 import jwt from 'jsonwebtoken';
 import multer from 'multer';
-import authenticateToken from '../../middleware/auth.js';
+import { authenticateToken } from '../../middleware/auth.js';
 
 const upload = multer();
 const router = Router();

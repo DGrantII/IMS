@@ -1,15 +1,8 @@
 import { Router } from 'express';
 import { db } from '../../db.js';
-import authenticateToken from '../../middleware/auth.js';
+import { authenticateToken, requireAdmin } from '../../middleware/auth.js';
 
 const router = Router();
-
-function requirePrivileged(req, res, next) {
-  if (req.user.role !== "Privileged" && req.user.role !== "Admin") {
-    return res.status(403).json({ error: "Forbidden" });
-  }
-  next();
-}
 
 // Route to search for manifests based on query parameters
 // Supports three search scenarios:
@@ -193,7 +186,7 @@ router.post('/receive-manifest', authenticateToken, async (req, res) => {
 
 // Route to create a new manifest
 // Expected request body: { trackingNumber: "ABC123", items: [{ sku: "456", quantity: 10 }] }
-router.post('/create-manifest', authenticateToken, requirePrivileged, async (req, res) => {
+router.post('/create-manifest', authenticateToken, requireAdmin, async (req, res) => {
     try {
         let { trackingNumber, items } = req.body;
         if (!items || !Array.isArray(items) || items.length === 0) {

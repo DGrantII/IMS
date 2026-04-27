@@ -1,22 +1,8 @@
 import { Router } from 'express';
 import { db } from '../../db.js';
-import authenticateToken from '../../middleware/auth.js';
+import { authenticateToken, requireAdmin } from '../../middleware/auth.js';
 
 const router = Router();
-
-const requirePrivileged = (req, res, next) => {
-  if (req.user.role !== "Privileged" && req.user.role !== "Admin") {
-    return res.status(403).json({ error: "Forbidden" });
-  }
-  next();
-}
-
-const requireAdmin = (req, res, next) => {
-  if (req.user.role !== "Admin") {
-    return res.status(403).json({ error: "Forbidden" });
-  }
-  next();
-}
 
 // Route to search for items based on query parameters
 router.get('/search-item', authenticateToken, async (req, res) => {

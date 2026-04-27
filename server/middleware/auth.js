@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 
-function authenticateToken(req, res, next) {
+const authenticateToken = (req, res, next) => {
     const token = req.cookies.token;
     if (!token) {
         return res.status(401).json({ error: 'Not authenticated' });
@@ -25,4 +25,18 @@ function authenticateToken(req, res, next) {
     }
 }
 
-export default authenticateToken;
+const requirePrivileged = (req, res, next) => {
+  if (req.user.role !== "Privileged" && req.user.role !== "Admin") {
+    return res.status(403).json({ error: "Forbidden" });
+  }
+  next();
+}
+
+const requireAdmin = (req, res, next) => {
+  if (req.user.role !== "Admin") {
+    return res.status(403).json({ error: "Forbidden" });
+  }
+  next();
+};
+
+export { authenticateToken, requirePrivileged, requireAdmin };

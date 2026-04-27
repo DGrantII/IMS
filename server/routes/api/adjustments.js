@@ -1,15 +1,8 @@
 import { Router } from 'express';
 import { db } from '../../db.js';
-import authenticateToken from '../../middleware/auth.js';
+import { authenticateToken, requirePrivileged } from '../../middleware/auth.js';
 
 const router = Router();
-
-function requirePrivileged(req, res, next) {
-  if (req.user.role !== "Privileged" && req.user.role !== "Admin") {
-    return res.status(403).json({ error: "Forbidden" });
-  }
-  next();
-}
 
 // Route to search for adjustments based on query parameters
 // Supports two search scenarios:
