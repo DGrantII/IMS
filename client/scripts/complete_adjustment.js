@@ -60,52 +60,56 @@ const populateAdjustmentContent = async () => {
         // Populate adjustment details
         const initialTotalCost = Number(adjustment.totalCost ?? 0);
         let output = `
-        <table id="adjustment-table" class="table table-striped">
-            <tbody>
-                <tr><th>Adjustment Number</th><td>${adjustment.inventoryAdjustmentID}</td></tr>
-                <tr><th>Create Date</th><td>${new Date(adjustment.createDate).toLocaleDateString()}</td></tr>
-                <tr><th>Status</th><td>${adjustment.status}</td></tr>
-                <tr><th>Adjusted By</th><td>${adjustment.adjustedBy || 'N/A'}</td></tr>
-                <tr><th>Reason</th><td>
-                    <textarea class="form-control" rows="3" id="adjustmentReason">${adjustment.reason || 'N/A'}</textarea>
-                </td></tr>
-                <tr><th>Total Cost</th><td>$${initialTotalCost.toFixed(2)}</td></tr>
-            </tbody>
-        </table>
-        <table id="adjustment-items-table" class="table table-striped">
-            <thead>
-                <tr>
-                    <th>SKU</th>
-                    <th>UPC</th>
-                    <th>Description</th>
-                    <th>Quantity Before</th>
-                    <th>Quantity After</th>
-                    <th>Cost</th>
-                </tr>
-            </thead>
-            <tbody>
-                ${items.map(item => `
+        <div class="table-responsive">
+            <table id="adjustment-table" class="table table-striped">
+                <tbody>
+                    <tr><th>Adjustment Number</th><td>${adjustment.inventoryAdjustmentID}</td></tr>
+                    <tr><th>Create Date</th><td>${new Date(adjustment.createDate).toLocaleDateString()}</td></tr>
+                    <tr><th>Status</th><td>${adjustment.status}</td></tr>
+                    <tr><th>Adjusted By</th><td>${adjustment.adjustedBy || 'N/A'}</td></tr>
+                    <tr><th>Reason</th><td>
+                        <textarea class="form-control" rows="3" id="adjustmentReason">${adjustment.reason || 'N/A'}</textarea>
+                    </td></tr>
+                    <tr><th>Total Cost</th><td>$${initialTotalCost.toFixed(2)}</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="table-responsive">
+            <table id="adjustment-items-table" class="table table-striped">
+                <thead>
                     <tr>
-                        <td>${item.sku}</td>
-                        <td>${item.upc}</td>
-                        <td>${item.description}</td>
-                        <td class="quantity-before">${item.quantityBefore}</td>
-                        <td>
-                            <input
-                                type="number"
-                                min="0"
-                                price="${item.price}"
-                                value="${item.quantityAfter}"
-                                id="${item.sku}"
-                                style="width: 50px;"
-                                class="form-control form-control-sm quantity-after-input"
-                                onchange="updateCosts( ${item.sku}, ${item.quantityBefore}, this.value)" />
-                        </td>
-                        <td>$${item.cost}</td>
+                        <th>SKU</th>
+                        <th>UPC</th>
+                        <th>Description</th>
+                        <th>Quantity Before</th>
+                        <th>Quantity After</th>
+                        <th>Cost</th>
                     </tr>
-                `).join('')}
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    ${items.map(item => `
+                        <tr>
+                            <td>${item.sku}</td>
+                            <td>${item.upc}</td>
+                            <td>${item.description}</td>
+                            <td class="quantity-before">${item.quantityBefore}</td>
+                            <td>
+                                <input
+                                    type="number"
+                                    min="0"
+                                    price="${item.price}"
+                                    value="${item.quantityAfter}"
+                                    id="${item.sku}"
+                                    style="width: 50px;"
+                                    class="form-control form-control-sm quantity-after-input"
+                                    onchange="updateCosts( ${item.sku}, ${item.quantityBefore}, this.value)" />
+                            </td>
+                            <td>$${item.cost}</td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
+        </div>
         `;
 
         let buttonOutput = `

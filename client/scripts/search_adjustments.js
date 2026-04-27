@@ -144,28 +144,31 @@ const fetchAdjustmentDetails = async (adjustmentNumber) => {
 const populateAdjustmentTable = (adjustment, items) => {
     let output = `
     <h3>Adjustment Details</h3>
-    <table id="adjustment-table" class="table table-striped">
-        <tbody>
-            <tr><th>Adjustment Number</th><td>${adjustment.inventoryAdjustmentID}</td></tr>
-            <tr><th>Create Date</th><td>${new Date(adjustment.createDate).toLocaleDateString()}</td></tr>
-            <tr><th>Status</th><td>${adjustment.status}</td></tr>
-            <tr><th>Adjusted By</th><td>${adjustment.adjustedBy || 'N/A'}</td></tr>
-            <tr><th>Reason</th><td>${adjustment.reason || 'N/A'}</td></tr>
-            <tr><th>Total Cost</th><td>${adjustment.totalCost || 'N/A'}</td></tr>
-        </tbody>
-    </table>
+    <div class="table-responsive">
+        <table id="adjustment-table" class="table table-striped">
+            <tbody>
+                <tr><th>Adjustment Number</th><td>${adjustment.inventoryAdjustmentID}</td></tr>
+                <tr><th>Create Date</th><td>${new Date(adjustment.createDate).toLocaleDateString()}</td></tr>
+                <tr><th>Status</th><td>${adjustment.status}</td></tr>
+                <tr><th>Adjusted By</th><td>${adjustment.adjustedBy || 'N/A'}</td></tr>
+                <tr><th>Reason</th><td>${adjustment.reason || 'N/A'}</td></tr>
+                <tr><th>Total Cost</th><td>${adjustment.totalCost || 'N/A'}</td></tr>
+            </tbody>
+        </table>
+    </div>
     <h3>Items</h3>
-    <table id="adjustment-items-table" class="table table-striped">
-        <thead>
-            <tr>
-                <th>SKU</th>
-                <th>UPC</th>
-                <th>Description</th>
-                <th>Variance</th>
-                <th>Cost</th>
-            </tr>
-        </thead>
-        <tbody>
+    <div class="table-responsive">
+        <table id="adjustment-items-table" class="table table-striped">
+            <thead>
+                <tr>
+                    <th>SKU</th>
+                    <th>UPC</th>
+                    <th>Description</th>
+                    <th>Variance</th>
+                    <th>Cost</th>
+                </tr>
+            </thead>
+            <tbody>
     `;
     items.forEach(item => {
         output += `
@@ -179,8 +182,9 @@ const populateAdjustmentTable = (adjustment, items) => {
         `;
     });
     output += `
-        </tbody>
-    </table>
+            </tbody>
+        </table>
+    </div>
     `;
     document.getElementById('adjustment-content').innerHTML = output;
     document.getElementById('adjustment-content').scrollIntoView({ behavior: 'smooth' });

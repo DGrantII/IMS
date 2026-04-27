@@ -77,38 +77,42 @@ const populateReceivingContent = async () => {
 
         // Populate manifest details
         let output = `
-        <table id="manifest-table" class="table table-striped">
-            <tbody>
-                <tr><th>Manifest Number</th><td>${manifest.manifestNumber}</td></tr>
-                <tr><th>Tracking Number</th><td>${manifest.trackingNumber || 'N/A'}</td></tr>
-                <tr><th>Create Date</th><td>${new Date(manifest.createDate).toLocaleDateString()}</td></tr>
-                <tr><th>Status</th><td>${manifest.status}</td></tr>
-            </tbody>
-        </table>
-        <table id="manifest-items-table" class="table table-striped">
-            <thead>
-                <tr>
-                    <th>SKU</th>
-                    <th>UPC</th>
-                    <th>Description</th>
-                    <th>Sent Quantity</th>
-                    <th>Received Quantity</th>
-                </tr>
-            </thead>
-            <tbody>
-                ${items.map(item => `
+        <div class="table-responsive">
+            <table id="manifest-table" class="table table-striped">
+                <tbody>
+                    <tr><th>Manifest Number</th><td>${manifest.manifestNumber}</td></tr>
+                    <tr><th>Tracking Number</th><td>${manifest.trackingNumber || 'N/A'}</td></tr>
+                    <tr><th>Create Date</th><td>${new Date(manifest.createDate).toLocaleDateString()}</td></tr>
+                    <tr><th>Status</th><td>${manifest.status}</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="table-responsive">
+            <table id="manifest-items-table" class="table table-striped">
+                <thead>
                     <tr>
-                        <td>${item.sku}</td>
-                        <td>${item.upc}</td>
-                        <td>${item.description}</td>
-                        <td>${item.quantity}</td>
-                        <td>
-                            <input type="number" sentQuantity="${item.quantity}" min="0" value="0" id="${item.sku}" style="width: 50px;" class="form-control form-control-sm received-quantity-input">
-                        </td>
+                        <th>SKU</th>
+                        <th>UPC</th>
+                        <th>Description</th>
+                        <th>Sent Quantity</th>
+                        <th>Received Quantity</th>
                     </tr>
-                `).join('')}
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    ${items.map(item => `
+                        <tr>
+                            <td>${item.sku}</td>
+                            <td>${item.upc}</td>
+                            <td>${item.description}</td>
+                            <td>${item.quantity}</td>
+                            <td>
+                                <input type="number" sentQuantity="${item.quantity}" min="0" value="0" id="${item.sku}" style="width: 50px;" class="form-control form-control-sm received-quantity-input">
+                            </td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
+        </div>
         `;
 
         let receiveBtn = '<button class="btn btn-primary w-100 mb-4" id="receiveBtn">Receive</button>'

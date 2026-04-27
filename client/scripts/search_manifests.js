@@ -163,16 +163,18 @@ const fetchManifestDetails = async (manifestNumber) => {
 const populateManifestTable = (manifest, items) => {
     let output = `
     <h3>Manifest Details</h3>
-    <table id="manifest-table" class="table table-striped">
-        <tbody>
-            <tr><th>Manifest Number</th><td>${manifest.manifestNumber}</td></tr>
-            <tr><th>Tracking Number</th><td>${manifest.trackingNumber || 'N/A'}</td></tr>
-            <tr><th>Create Date</th><td>${new Date(manifest.createDate).toLocaleDateString()}</td></tr>
-            <tr><th>Status</th><td>${manifest.status}</td></tr>
-            <tr><th>Receive Date</th><td>${manifest.receiveDate ? new Date(manifest.receiveDate).toLocaleDateString() : 'N/A'}</td></tr>
-            <tr><th>Received By</th><td>${manifest.receivedBy || 'N/A'}</td></tr>
-        </tbody>
-    </table>
+    <div class="table-responsive">
+        <table id="manifest-table" class="table table-striped">
+            <tbody>
+                <tr><th>Manifest Number</th><td>${manifest.manifestNumber}</td></tr>
+                <tr><th>Tracking Number</th><td>${manifest.trackingNumber || 'N/A'}</td></tr>
+                <tr><th>Create Date</th><td>${new Date(manifest.createDate).toLocaleDateString()}</td></tr>
+                <tr><th>Status</th><td>${manifest.status}</td></tr>
+                <tr><th>Receive Date</th><td>${manifest.receiveDate ? new Date(manifest.receiveDate).toLocaleDateString() : 'N/A'}</td></tr>
+                <tr><th>Received By</th><td>${manifest.receivedBy || 'N/A'}</td></tr>
+            </tbody>
+        </table>
+    </div>
     <h3>Items</h3>
     <table id="manifest-items-table" class="table table-striped">
         <thead>
