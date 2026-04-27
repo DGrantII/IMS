@@ -109,11 +109,13 @@ const populateReceivingContent = async () => {
                 `).join('')}
             </tbody>
         </table>
-        <button class="btn btn-primary w-25 float-end mt-3" id="receiveBtn">Receive</button>
         `;
+
+        let receiveBtn = '<button class="btn btn-primary w-100 mb-4" id="receiveBtn">Receive</button>'
 
         // Insert content into page and add event listener to receive button
         document.getElementById('receiving-content').innerHTML = output;
+        document.getElementById('receiveBtnWrapper').innerHTML = receiveBtn;
         document.getElementById('receiveBtn').addEventListener('click', checkVariances);
 
     } catch (error) {

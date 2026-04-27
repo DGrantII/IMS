@@ -26,17 +26,21 @@
         </div>
     </header>
     <div class="container mt-5 pt-5">
-        <form id="loginForm" class="w-50 mx-auto bg-light rounded p-4">
-            <div class="mb-3">
-                <label for="employeeID" class="form-label">Employee ID</label>
-                <input type="text" class="form-control border border-2" id="employeeID" required>
+        <div class="row justify-content-center">
+            <div class="col col-md-6">
+                <form id="loginForm" class="w-100 bg-light rounded p-4">
+                    <div class="mb-3">
+                        <label for="employeeID" class="form-label">Employee ID</label>
+                        <input type="text" class="form-control border border-2" id="employeeID" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password</label>
+                        <input type="password" class="form-control border border-2" id="password" required>
+                    </div>
+                    <button type="submit" class="btn btn-secondary w-100">Login</button>
+                </form>
             </div>
-            <div class="mb-3">
-                <label for="password" class="form-label">Password</label>
-                <input type="password" class="form-control border border-2" id="password" required>
-            </div>
-            <button type="submit" class="btn btn-secondary w-100">Login</button>
-        </form>
+        </div>
     </div>
 
     <!-- Session expired modal -->

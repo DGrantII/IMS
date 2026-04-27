@@ -187,12 +187,12 @@ const populateAdjustmentTable = (adjustment, items) => {
 
     if (adjustment.status.toLowerCase() === 'suspended') {
         const modifyButton = document.createElement('button');
-        modifyButton.className = 'btn btn-primary w-25 float-end mt-3';
+        modifyButton.className = 'btn btn-primary w-100 float-end mt-3';
         modifyButton.textContent = 'Modify';
         modifyButton.addEventListener('click', () => {
             window.location.href = `adjustment-details?adjustmentNumber=${encodeURIComponent(adjustment.inventoryAdjustmentID)}`;
         });
-        document.getElementById('adjustment-content').appendChild(modifyButton);
+        document.getElementById('modifyBtnWrapper').appendChild(modifyButton);
     }
 
 };

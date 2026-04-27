@@ -109,14 +109,14 @@ const populateAdjustmentContent = async () => {
         `;
 
         let buttonOutput = `
-            <div class="col">
-                <button class="btn btn-danger" id="deleteAdjustmentBtn">Delete Adjustment</button>
+            <div class="col-sm-12 col-md-4 mb-3">
+                <button class="btn btn-danger w-100" id="deleteAdjustmentBtn">Delete Adjustment</button>
             </div>
-            <div class="col">
-                <button class="col-sm-auto btn btn-secondary" id="cancelAdjustmentBtn">Suspend Adjustment</button>
+            <div class="col-sm-12 col-md-4 mb-3">
+                <button class="btn btn-secondary w-100" id="cancelAdjustmentBtn">Suspend Adjustment</button>
             </div>
-            <div class="col">
-                <button class="col-sm-auto btn btn-primary" id="completeAdjustmentBtn">Complete Adjustment</button>
+            <div class="col-sm-12 col-md-4 mb-3">
+                <button class="btn btn-primary w-100" id="completeAdjustmentBtn">Complete Adjustment</button>
             </div>
         `;
 

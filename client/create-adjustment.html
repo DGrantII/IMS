@@ -39,7 +39,7 @@
                     <h2>Create Adjustment</h2>
                 </div>
             </div>
-            <div class="row border px-3 mb-4 pt-3">
+            <div class="row border border-bottom-0 px-3 pt-3">
                 <label for="reason" class="form-label">Reason</label>
                 <div class="input-group mb-3">
                     <textarea id="reason" class="form-control" placeholder="Reason" aria-label="Reason"></textarea>
@@ -63,9 +63,13 @@
                         <tbody id="itemList"></tbody>
                     </table>
                 </div>
-                <div class="row mb-3">
-                    <button class="btn btn-secondary w-25 mt-3" id="suspendBtn">Suspend</button>
-                    <button class="btn btn-primary w-25 mt-3" id="completeBtn">Complete</button>
+            </div>
+            <div class="row border border-top-0 justify-content-end mb-4">
+                <div class="col-sm-12 col-md-4 mb-3">
+                    <button class="btn btn-secondary w-100" id="suspendBtn">Suspend</button>
+                </div>
+                <div class="col-sm-12 col-md-4 mb-3">
+                    <button class="btn btn-primary w-100" id="completeBtn">Complete</button>
                 </div>
             </div>
         </div>

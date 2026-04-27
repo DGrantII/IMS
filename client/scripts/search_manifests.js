@@ -204,12 +204,12 @@ const populateManifestTable = (manifest, items) => {
 
     if (manifest.status.toLowerCase() === 'shipped') {
         const receiveButton = document.createElement('button');
-        receiveButton.className = 'btn btn-primary w-25 float-end mt-3';
+        receiveButton.className = 'btn btn-primary w-100 mt-3';
         receiveButton.textContent = 'Receive';
         receiveButton.addEventListener('click', () => {
             window.location.href = `receiving?manifestNumber=${encodeURIComponent(manifest.manifestNumber)}`;
         });
-        document.getElementById('manifest-content').appendChild(receiveButton);
+        document.getElementById('receiveBtnWrapper').appendChild(receiveButton);
     }
 };
 
