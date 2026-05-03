@@ -86,6 +86,7 @@ const createNav = async () => {
                 credentials: 'include'
             });
             if (response.ok) {
+                sessionStorage.removeItem('sessionActive');
                 window.location.href = 'login';
             } else {
                 alert('Logout failed');

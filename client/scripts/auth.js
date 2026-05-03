@@ -39,3 +39,22 @@ const showModal = (title = 'Session Expired', message = 'Your session has expire
 const handleAuthError = (message, redirectUrl, title = 'Session Expired') => {
     showModal(title, message, redirectUrl);
 }
+
+const checkAuthOnLoad = async () => {
+    if (!sessionStorage.getItem('sessionActive')) {
+        // Fresh tab open (sessionStorage is cleared on tab close)
+        // Proactively validate the token - if expired, redirect silently without showing the modal
+        const res = await fetch('/api/account/validate-token', {
+            credentials: 'include'
+        });
+        if (!res.ok) {
+            window.location.href = 'login';
+            return {redirecting: true};
+        }
+
+        // Token is valid - mark session as active so future page loads in this tab won't trigger validation again
+        sessionStorage.setItem('sessionActive', 'true');
+    }
+
+    return await loadUser();
+}

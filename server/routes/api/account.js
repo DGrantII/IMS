@@ -53,4 +53,8 @@ router.get("/me", authenticateToken, (req, res) => {
     res.json({ employeeID: req.user.employeeID, role: req.user.role, name: `${req.user.firstName} ${req.user.lastName}` });
 });
 
+router.get("/validate-token", authenticateToken, (req, res) => {
+    res.json({ valid: true });
+});
+
 export default router;
