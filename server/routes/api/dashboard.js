@@ -29,8 +29,9 @@ router.get('/', authenticateToken, async (req, res) => {
             FROM InventoryAdjustments ia
             JOIN InventoryAdjustmentItems iai
                 ON iai.InventoryAdjustmentID = ia.InventoryAdjustmentID
-            WHERE ia.createDate >= DATE_FORMAT(CURDATE(), '%Y-%m-01')
-                AND ia.createDate < DATE_ADD(DATE_FORMAT(CURDATE(), '%Y-%m-01'), INTERVAL 1 MONTH)
+            WHERE ia.completeDate >= DATE_FORMAT(CURDATE(), '%Y-%m-01')
+                AND ia.completeDate < DATE_ADD(DATE_FORMAT(CURDATE(), '%Y-%m-01'), INTERVAL 1 MONTH)
+                AND ia.status = 'Completed'
         `;
         const [monthlyShrink] = await db.query(shrinkSQL);
         

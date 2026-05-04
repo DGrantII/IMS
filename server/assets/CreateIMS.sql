@@ -75,6 +75,7 @@ CREATE TABLE InventoryAdjustments (
     reason varchar(255),
     createDate DATE NOT NULL,
     adjustedBy INT NOT NULL,
+    completeDate DATE,
     FOREIGN KEY (adjustedBy) REFERENCES Employees(employeeID)
 );
 ALTER TABLE InventoryAdjustments AUTO_INCREMENT = 2309;

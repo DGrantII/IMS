@@ -135,7 +135,7 @@ router.post('/complete-adjustment', authenticateToken, requirePrivileged, async 
 
         // Update the adjustment status to "Completed" and who completed it
         await db.query(
-            'UPDATE InventoryAdjustments SET status = ?, adjustedBy = ?, reason = ? WHERE inventoryAdjustmentID = ?',
+            'UPDATE InventoryAdjustments SET status = ?, adjustedBy = ?, reason = ?, completeDate = NOW() WHERE inventoryAdjustmentID = ?',
             ['Completed', req.user.employeeID, adjustmentReason, adjustmentNumber]
         );
 
@@ -261,8 +261,13 @@ router.post('/create-adjustment', authenticateToken, requirePrivileged, async (r
             );
         }
 
-        // If the adjustment status is "Completed", update the inventory quantities
+        // If the adjustment status is "Completed", update the inventory quantities and set the complete date
         if (status.toLowerCase() === 'completed') {
+            await db.query(
+                'UPDATE InventoryAdjustments SET completeDate = NOW() WHERE inventoryAdjustmentID = ?',
+                [adjustmentNumber]
+            );
+            
             for (const item of adjustmentItems) {
                 await db.query(
                     'UPDATE Items SET AvailableQuantity = AvailableQuantity + ? WHERE sku = ?',

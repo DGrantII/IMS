@@ -149,6 +149,7 @@ const populateAdjustmentTable = (adjustment, items) => {
             <tbody>
                 <tr><th>Adjustment Number</th><td>${adjustment.inventoryAdjustmentID}</td></tr>
                 <tr><th>Create Date</th><td>${new Date(adjustment.createDate).toLocaleDateString()}</td></tr>
+                <tr><th>Complete Date</th><td>${adjustment.completeDate ? new Date(adjustment.completeDate).toLocaleDateString() : 'N/A'}</td></tr>
                 <tr><th>Status</th><td>${adjustment.status}</td></tr>
                 <tr><th>Adjusted By</th><td>${adjustment.adjustedBy || 'N/A'}</td></tr>
                 <tr><th>Reason</th><td>${adjustment.reason || 'N/A'}</td></tr>
