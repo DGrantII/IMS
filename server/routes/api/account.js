@@ -12,17 +12,17 @@ router.post('/login', upload.none(), async (req, res) => {
     try {
         const { employeeID, password } = req.body;
         if (!employeeID || !password) {
-            return res.status(400).json({ error: 'Missing employeeID or password' });
+            return res.status(400).json({ message: 'Missing employeeID or password' });
         }
 
         const [rows] = await db.query('SELECT employeeID, passwordHash, role, firstName, lastName FROM Employees WHERE employeeID = ?', [employeeID]);
         if (!rows.length) {
-            return res.status(401).json({ error: 'Invalid employeeID or password' });
+            return res.status(401).json({ message: 'Invalid employeeID or password' });
         }
 
         const isMatch = await bcrypt.compare(password, rows[0].passwordHash);
         if (!isMatch) {
-            return res.status(401).json({ error: 'Invalid employeeID or password' });
+            return res.status(401).json({ message: 'Invalid employeeID or password' });
         }
 
         const token = jwt.sign({ employeeID: rows[0].employeeID, role: rows[0].role, firstName: rows[0].firstName, lastName: rows[0].lastName }, process.env.JWT_SECRET, { expiresIn: '15m' });

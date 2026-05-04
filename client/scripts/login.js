@@ -67,7 +67,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (data.success) {
                     window.location.href = '/';
                 } else {
-                    alert('Invalid Employee ID or Password');
+                    console.log('Login failed:', data.message);
+                    const errorMessageElement = document.getElementById('errorMessage');
+                    errorMessageElement.classList.remove('d-none');
+                    errorMessageElement.textContent = data.message || 'Login failed. Please try again.';
+                    startLoginExpirationTimer(); // Reset the expiration timer on failed login attempt
+                    document.getElementById('password').value = ''; // Clear password field for security
                 }
             })
             .catch(error => console.error('Error:', error));
