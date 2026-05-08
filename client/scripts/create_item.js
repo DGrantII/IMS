@@ -24,6 +24,17 @@ const createItem = async () => {
         return;
     }
 
+    if (isNaN(price) || parseFloat(price) < 0) {
+        alert('Please enter a valid non-negative number for price.');
+        return;
+    }
+
+    const upcRegex = /^\d{12}$/;
+    if (!upcRegex.test(upc)) {
+        alert('Please enter a valid 12-digit UPC.');
+        return;
+    }
+
     try {
         const response = await fetch('/api/items/create-item', {
             method: 'POST',
