@@ -69,8 +69,14 @@ const clearForm = () => {
 const clearButton = document.getElementById('clearButton');
 clearButton.addEventListener('click', clearForm);
 
+// Handle form submission
 const manifestForm = document.querySelector('#manifestForm');
 manifestForm.addEventListener('submit', async (e) => {
+
+    // Clear any existing receive button
+    const receiveBtnWrapper = document.getElementById('receiveBtnWrapper');
+    receiveBtnWrapper.innerHTML = '';
+
     e.preventDefault();
     const manifestNumber = document.getElementById('manifestNumber').value.trim();
     const trackingNumber = document.getElementById('trackingNumber').value.trim();
@@ -85,6 +91,7 @@ manifestForm.addEventListener('submit', async (e) => {
         return;
     }
 
+    // Build query string based on provided parameters
     let queryParams = [];
     if (manifestNumber) queryParams.push(`manifestNumber=${encodeURIComponent(manifestNumber)}`);
     if (trackingNumber) queryParams.push(`trackingNumber=${encodeURIComponent(trackingNumber)}`);
@@ -96,17 +103,22 @@ manifestForm.addEventListener('submit', async (e) => {
     const queryString = queryParams.length > 0 ? `?${queryParams.join('&')}` : '';
     
     try {
+        // Make API call to search for manifests
         const response = await fetch(`/api/manifests/search-manifest${queryString}`, {
             method: 'GET',
             credentials: 'include'
         });
 
+        // Handle unauthorized access
         if (response.status === 401 || response.status === 403) {
             handleAuthError('You do not have access. Redirecting to home page.', 'index', 'Access Denied');
             return;
         }
         
+        // Parse response data
         const data = await response.json();
+
+        // Handle case where no manifests are found
         if (!data.found) {
             const manifestContent = document.getElementById('manifest-content');
             manifestContent.innerHTML = `<div class="alert alert-warning" role="alert">No manifests found</div>`;
@@ -142,16 +154,22 @@ manifestForm.addEventListener('submit', async (e) => {
     }
 });
 
+// Function to fetch manifest details when a manifest is selected from the list
 const fetchManifestDetails = async (manifestNumber) => {
     try {
+        // Make API call to fetch manifest details
         const response = await fetch(`/api/manifests/search-manifest?manifestNumber=${encodeURIComponent(manifestNumber)}`, {
             method: 'GET',
             credentials: 'include'
         });
+
+        // Handle unauthorized access
         if (response.status === 401 || response.status === 403) {
             handleAuthError('You do not have access. Redirecting to home page.', 'index', 'Access Denied');
             return;
         }
+
+        // Parse response data
         const data = await response.json();
         populateManifestTable(data.manifests[0], data.items);
     } catch (error) {
@@ -160,7 +178,9 @@ const fetchManifestDetails = async (manifestNumber) => {
     }
 };
 
+// Function to populate manifest details and items in the table
 const populateManifestTable = (manifest, items) => {
+    // Build HTML output for manifest details and items
     let output = `
     <h3>Manifest Details</h3>
     <div class="table-responsive">

@@ -55,11 +55,22 @@ clearButton.addEventListener('click', clearForm);
 const adjustmentForm = document.querySelector('#adjustmentForm');
 adjustmentForm.addEventListener('submit', async (e) => {
     e.preventDefault();
+
+    // Clear any existing modify button
+    const modifyBtnWrapper = document.getElementById('modifyBtnWrapper');
+    modifyBtnWrapper.innerHTML = '';
+
     const adjustmentNumber = document.getElementById('adjustmentNumber').value.trim();
     const createDateStart = document.getElementById('createDateStart').value;
     const createDateEnd = document.getElementById('createDateEnd').value;
     const status = document.getElementById('status').value;
     const itemNumber = document.getElementById('itemNumberAdjustment').value.trim();
+
+    // Checking if at least one search parameter is provided
+    if (!adjustmentNumber && !itemNumber && !createDateStart && !createDateEnd && !status) {
+        alert('Please provide at least one search parameter.');
+        return;
+    }
 
     let queryParams = [];
     if (adjustmentNumber) queryParams.push(`adjustmentNumber=${encodeURIComponent(adjustmentNumber)}`);
