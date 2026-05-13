@@ -38,7 +38,13 @@ const startLoginExpirationTimer = () => {
     loginExpirationTimer = setTimeout(expireLoginSession, LOGIN_EXPIRATION_MS);
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+    const result = await loadUser();
+    if (result && !result.redirecting) {
+        window.location.href = '/';
+        return;
+    }
+
     startLoginExpirationTimer();
 
     document.getElementById('loginForm').addEventListener('submit', (event) => {

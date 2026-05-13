@@ -13,5 +13,6 @@ window.addEventListener('DOMContentLoaded', async () => {
     if (user.redirecting) return;
     document.documentElement.style.visibility = 'visible';
     document.getElementById('user-info').textContent = `Hello, ${user.name}`;
+    document.getElementById('user-role').textContent = `Role: ${user.role}`;
     await loadDashboard(user);
 });
