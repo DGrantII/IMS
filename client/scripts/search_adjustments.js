@@ -52,32 +52,26 @@ const clearForm = () => {
 const clearButton = document.getElementById('clearButton');
 clearButton.addEventListener('click', clearForm);
 
-const adjustmentForm = document.querySelector('#adjustmentForm');
-adjustmentForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
+// Function to update URL with search parameters
+const updateURLWithSearchParams = (params) => {
+    const url = new URL(window.location);
+    url.search = ''; // Clear existing params
+    Object.entries(params).forEach(([key, value]) => {
+        if (value) {
+            url.searchParams.set(key, value);
+        }
+    });
+    window.history.replaceState({}, '', url);
+};
 
-    // Clear any existing modify button
-    const modifyBtnWrapper = document.getElementById('modifyBtnWrapper');
-    modifyBtnWrapper.innerHTML = '';
-
-    const adjustmentNumber = document.getElementById('adjustmentNumber').value.trim();
-    const createDateStart = document.getElementById('createDateStart').value;
-    const createDateEnd = document.getElementById('createDateEnd').value;
-    const status = document.getElementById('status').value;
-    const itemNumber = document.getElementById('itemNumberAdjustment').value.trim();
-
-    // Checking if at least one search parameter is provided
-    if (!adjustmentNumber && !itemNumber && !createDateStart && !createDateEnd && !status) {
-        alert('Please provide at least one search parameter.');
-        return;
-    }
-
+// Function to perform the search API request
+const performAdjustmentSearch = async (params) => {
     let queryParams = [];
-    if (adjustmentNumber) queryParams.push(`adjustmentNumber=${encodeURIComponent(adjustmentNumber)}`);
-    if (createDateStart) queryParams.push(`createDateStart=${encodeURIComponent(createDateStart)}`);
-    if (createDateEnd) queryParams.push(`createDateEnd=${encodeURIComponent(createDateEnd)}`);
-    if (status) queryParams.push(`status=${encodeURIComponent(status)}`);
-    if (itemNumber) queryParams.push(`itemNumber=${encodeURIComponent(itemNumber)}`);
+    if (params.adjustmentNumber) queryParams.push(`adjustmentNumber=${encodeURIComponent(params.adjustmentNumber)}`);
+    if (params.createDateStart) queryParams.push(`createDateStart=${encodeURIComponent(params.createDateStart)}`);
+    if (params.createDateEnd) queryParams.push(`createDateEnd=${encodeURIComponent(params.createDateEnd)}`);
+    if (params.status) queryParams.push(`status=${encodeURIComponent(params.status)}`);
+    if (params.itemNumber) queryParams.push(`itemNumber=${encodeURIComponent(params.itemNumber)}`);
 
     const queryString = queryParams.length ? `?${queryParams.join('&')}` : '';
 
@@ -131,6 +125,74 @@ adjustmentForm.addEventListener('submit', async (e) => {
         console.error('Error fetching adjustments:', error);
         alert('An error occurred while searching for adjustments. Please try again later.');
     }
+};
+
+// Function to load search parameters from URL and populate fields
+const loadSearchParamsFromURL = async () => {
+    const url = new URL(window.location);
+    const adjustmentNumberParam = url.searchParams.get('adjustmentNumber');
+    const createDateStartParam = url.searchParams.get('createDateStart');
+    const createDateEndParam = url.searchParams.get('createDateEnd');
+    const statusParam = url.searchParams.get('status');
+    const itemNumberParam = url.searchParams.get('itemNumber');
+
+    if (adjustmentNumberParam || createDateStartParam || createDateEndParam || statusParam || itemNumberParam) {
+        if (adjustmentNumberParam) adjustmentNumber.value = adjustmentNumberParam;
+        if (createDateStartParam) createDateStart.value = createDateStartParam;
+        if (createDateEndParam) createDateEnd.value = createDateEndParam;
+        if (statusParam) status.value = statusParam;
+        if (itemNumberParam) itemNumber.value = itemNumberParam;
+        
+        updateDisabled();
+        
+        // Automatically perform the search
+        await performAdjustmentSearch({
+            adjustmentNumber: adjustmentNumberParam || '',
+            createDateStart: createDateStartParam || '',
+            createDateEnd: createDateEndParam || '',
+            status: statusParam || '',
+            itemNumber: itemNumberParam || ''
+        });
+    }
+};
+
+const adjustmentForm = document.querySelector('#adjustmentForm');
+adjustmentForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    // Clear any existing modify button
+    const modifyBtnWrapper = document.getElementById('modifyBtnWrapper');
+    modifyBtnWrapper.innerHTML = '';
+
+    const adjustmentNumberValue = document.getElementById('adjustmentNumber').value.trim();
+    const createDateStartValue = document.getElementById('createDateStart').value;
+    const createDateEndValue = document.getElementById('createDateEnd').value;
+    const statusValue = document.getElementById('status').value;
+    const itemNumberValue = document.getElementById('itemNumberAdjustment').value.trim();
+
+    // Checking if at least one search parameter is provided
+    if (!adjustmentNumberValue && !itemNumberValue && !createDateStartValue && !createDateEndValue && !statusValue) {
+        alert('Please provide at least one search parameter.');
+        return;
+    }
+
+    // Update URL with search parameters
+    updateURLWithSearchParams({
+        adjustmentNumber: adjustmentNumberValue,
+        createDateStart: createDateStartValue,
+        createDateEnd: createDateEndValue,
+        status: statusValue,
+        itemNumber: itemNumberValue
+    });
+
+    // Perform the search
+    await performAdjustmentSearch({
+        adjustmentNumber: adjustmentNumberValue,
+        createDateStart: createDateStartValue,
+        createDateEnd: createDateEndValue,
+        status: statusValue,
+        itemNumber: itemNumberValue
+    });
 });
 
 const fetchAdjustmentDetails = async (adjustmentNumber) => {
@@ -215,10 +277,11 @@ const populateAdjustmentTable = (adjustment, items) => {
 
 const createAdjustmentButton = () => {
     const adjustmentButton = document.createElement('button');
-    adjustmentButton.className = 'btn btn-primary p-0 rounded-circle';
+    adjustmentButton.className = 'btn btn-primary p-2';
     adjustmentButton.href = './create-adjustment';
     adjustmentButton.innerHTML = `
-        <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="currentColor" class="bi bi-plus-circle" viewBox="0 0 16 16">
+        Create Adjustment
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-circle" viewBox="0 0 16 16">
             <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
             <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
         </svg>
@@ -229,6 +292,7 @@ const createAdjustmentButton = () => {
     document.getElementById('createButtonWrapper').appendChild(adjustmentButton);
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+    await loadSearchParamsFromURL();
     createAdjustmentButton();
 });

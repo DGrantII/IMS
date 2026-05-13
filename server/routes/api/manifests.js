@@ -22,7 +22,7 @@ router.get('/search-manifest', authenticateToken, async (req, res) => {
                 SELECT Manifests.*, COUNT(ManifestItems.sku) as itemCount
                 FROM Manifests
                 LEFT JOIN ManifestItems ON Manifests.manifestNumber = ManifestItems.manifestNumber
-                WHERE Manifests.manifestNumber = ?
+                WHERE CAST(Manifests.manifestNumber as CHAR) = ?
                 GROUP BY Manifests.manifestNumber
             `;
             placeholders = [manifestNumber];
@@ -44,7 +44,7 @@ router.get('/search-manifest', authenticateToken, async (req, res) => {
             
             // Build dynamic WHERE clause
             if (itemNumber) {
-                whereConditions.push('(Items.upc = ? OR Items.sku = ?)');
+                whereConditions.push('(CAST(Items.upc as CHAR) = ? OR CAST(Items.sku as CHAR) = ?)');
                 placeholders.push(itemNumber);
                 placeholders.push(itemNumber);
             }
@@ -95,7 +95,7 @@ router.get('/search-manifest', authenticateToken, async (req, res) => {
                 SELECT Items.sku, Items.upc, Items.description, ManifestItems.quantity
                 FROM ManifestItems
                 JOIN Items ON ManifestItems.sku = Items.sku
-                WHERE ManifestItems.manifestNumber = ?
+                WHERE CAST(ManifestItems.manifestNumber as CHAR) = ?
             `;
             const [items] = await db.query(manifestItemsSql, [rows[0].manifestNumber]);
             res.json({ found: true, manifests: rows, items: items });
@@ -123,16 +123,16 @@ router.post('/receive-manifest', authenticateToken, async (req, res) => {
         await db.beginTransaction();
 
         // Update manifest status to "Received"
-        const updateManifestSql = 'UPDATE Manifests SET status = "Received", receiveDate = NOW(), receivedBy = ? WHERE manifestNumber = ?';
+        const updateManifestSql = 'UPDATE Manifests SET status = "Received", receiveDate = NOW(), receivedBy = ? WHERE CAST(manifestNumber as CHAR) = ?';
         await db.query(updateManifestSql, [req.user.employeeID, manifestNumber]);
 
         // Get items included in the manifest
-        const manifestItemsSql = 'SELECT sku, quantity FROM ManifestItems WHERE manifestNumber = ?';
+        const manifestItemsSql = 'SELECT sku, quantity FROM ManifestItems WHERE CAST(manifestNumber as CHAR) = ?';
         const [manifestItems] = await db.query(manifestItemsSql, [manifestNumber]);
 
         // Update inventory quantities for each item in the manifest
         for (const item of manifestItems) {
-            const updateItemSql = 'UPDATE Items SET availableQuantity = availableQuantity + ?, inTransit = inTransit - ? WHERE sku = ?';
+            const updateItemSql = 'UPDATE Items SET availableQuantity = availableQuantity + ?, inTransit = inTransit - ? WHERE CAST(sku as CHAR) = ?';
             await db.query(updateItemSql, [item.quantity, item.quantity, item.sku]);
         }
 
@@ -155,7 +155,7 @@ router.post('/receive-manifest', authenticateToken, async (req, res) => {
                 const varianceQuantity = actualQuantity - expectedQuantity;
 
                 // Getting cost of the item for accurate adjustment records
-                const itemCostSql = 'SELECT price FROM Items WHERE sku = ?';
+                const itemCostSql = 'SELECT price FROM Items WHERE CAST(sku as CHAR) = ?';
                 const [itemRows] = await db.query(itemCostSql, [sku]);
                 const price = itemRows.length > 0 ? itemRows[0].price : 0;
                 const varianceCost = price * varianceQuantity;
@@ -210,7 +210,7 @@ router.post('/create-manifest', authenticateToken, requireAdmin, async (req, res
             const { sku, quantity } = item;
             const insertManifestItemSql = 'INSERT INTO ManifestItems (manifestNumber, sku, quantity) VALUES (?, ?, ?)';
             await db.query(insertManifestItemSql, [manifestNumber, sku, quantity]);
-            const updateInTransitSql = 'UPDATE Items SET inTransit = inTransit + ? WHERE sku = ?';
+            const updateInTransitSql = 'UPDATE Items SET inTransit = inTransit + ? WHERE CAST(sku as CHAR) = ?';
             await db.query(updateInTransitSql, [quantity, sku]);
         }
 

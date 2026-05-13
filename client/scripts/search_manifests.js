@@ -69,36 +69,27 @@ const clearForm = () => {
 const clearButton = document.getElementById('clearButton');
 clearButton.addEventListener('click', clearForm);
 
-// Handle form submission
-const manifestForm = document.querySelector('#manifestForm');
-manifestForm.addEventListener('submit', async (e) => {
+// Function to update URL with search parameters
+const updateURLWithSearchParams = (params) => {
+    const url = new URL(window.location);
+    url.search = ''; // Clear existing params
+    Object.entries(params).forEach(([key, value]) => {
+        if (value) {
+            url.searchParams.set(key, value);
+        }
+    });
+    window.history.replaceState({}, '', url);
+};
 
-    // Clear any existing receive button
-    const receiveBtnWrapper = document.getElementById('receiveBtnWrapper');
-    receiveBtnWrapper.innerHTML = '';
-
-    e.preventDefault();
-    const manifestNumber = document.getElementById('manifestNumber').value.trim();
-    const trackingNumber = document.getElementById('trackingNumber').value.trim();
-    const itemNumber = document.getElementById('itemNumberShipping').value.trim();
-    const createDateStart = document.getElementById('createDateStart').value;
-    const createDateEnd = document.getElementById('createDateEnd').value;
-    const status = document.getElementById('status').value;
-
-    // Checking if at least one search parameter is provided
-    if (!manifestNumber && !trackingNumber && !itemNumber && !createDateStart && !createDateEnd && !status) {
-        alert('Please provide at least one search parameter.');
-        return;
-    }
-
-    // Build query string based on provided parameters
+// Function to perform the search API request
+const performManifestSearch = async (params) => {
     let queryParams = [];
-    if (manifestNumber) queryParams.push(`manifestNumber=${encodeURIComponent(manifestNumber)}`);
-    if (trackingNumber) queryParams.push(`trackingNumber=${encodeURIComponent(trackingNumber)}`);
-    if (itemNumber) queryParams.push(`itemNumber=${encodeURIComponent(itemNumber)}`);
-    if (createDateStart) queryParams.push(`createDateStart=${encodeURIComponent(createDateStart)}`);
-    if (createDateEnd) queryParams.push(`createDateEnd=${encodeURIComponent(createDateEnd)}`);
-    if (status) queryParams.push(`status=${encodeURIComponent(status)}`);
+    if (params.manifestNumber) queryParams.push(`manifestNumber=${encodeURIComponent(params.manifestNumber)}`);
+    if (params.trackingNumber) queryParams.push(`trackingNumber=${encodeURIComponent(params.trackingNumber)}`);
+    if (params.itemNumber) queryParams.push(`itemNumber=${encodeURIComponent(params.itemNumber)}`);
+    if (params.createDateStart) queryParams.push(`createDateStart=${encodeURIComponent(params.createDateStart)}`);
+    if (params.createDateEnd) queryParams.push(`createDateEnd=${encodeURIComponent(params.createDateEnd)}`);
+    if (params.status) queryParams.push(`status=${encodeURIComponent(params.status)}`);
 
     const queryString = queryParams.length > 0 ? `?${queryParams.join('&')}` : '';
     
@@ -152,6 +143,81 @@ manifestForm.addEventListener('submit', async (e) => {
         console.error('Error searching manifests:', error);
         alert('An error occurred while searching for manifests. Please try again later.');
     }
+};
+
+// Function to load search parameters from URL and populate fields
+const loadSearchParamsFromURL = async () => {
+    const url = new URL(window.location);
+    const manifestNumberParam = url.searchParams.get('manifestNumber');
+    const trackingNumberParam = url.searchParams.get('trackingNumber');
+    const itemNumberParam = url.searchParams.get('itemNumberShipping');
+    const createDateStartParam = url.searchParams.get('createDateStart');
+    const createDateEndParam = url.searchParams.get('createDateEnd');
+    const statusParam = url.searchParams.get('status');
+
+    if (manifestNumberParam || trackingNumberParam || itemNumberParam || createDateStartParam || createDateEndParam || statusParam) {
+        if (manifestNumberParam) manifestNumber.value = manifestNumberParam;
+        if (trackingNumberParam) trackingNumber.value = trackingNumberParam;
+        if (itemNumberParam) itemNumber.value = itemNumberParam;
+        if (createDateStartParam) createDateStart.value = createDateStartParam;
+        if (createDateEndParam) createDateEnd.value = createDateEndParam;
+        if (statusParam) status.value = statusParam;
+        
+        updateDisabled();
+        
+        // Automatically perform the search
+        await performManifestSearch({
+            manifestNumber: manifestNumberParam || '',
+            trackingNumber: trackingNumberParam || '',
+            itemNumber: itemNumberParam || '',
+            createDateStart: createDateStartParam || '',
+            createDateEnd: createDateEndParam || '',
+            status: statusParam || ''
+        });
+    }
+};
+
+// Handle form submission
+const manifestForm = document.querySelector('#manifestForm');
+manifestForm.addEventListener('submit', async (e) => {
+
+    // Clear any existing receive button
+    const receiveBtnWrapper = document.getElementById('receiveBtnWrapper');
+    receiveBtnWrapper.innerHTML = '';
+
+    e.preventDefault();
+    const manifestNumberValue = document.getElementById('manifestNumber').value.trim();
+    const trackingNumberValue = document.getElementById('trackingNumber').value.trim();
+    const itemNumberValue = document.getElementById('itemNumberShipping').value.trim();
+    const createDateStartValue = document.getElementById('createDateStart').value;
+    const createDateEndValue = document.getElementById('createDateEnd').value;
+    const statusValue = document.getElementById('status').value;
+
+    // Checking if at least one search parameter is provided
+    if (!manifestNumberValue && !trackingNumberValue && !itemNumberValue && !createDateStartValue && !createDateEndValue && !statusValue) {
+        alert('Please provide at least one search parameter.');
+        return;
+    }
+
+    // Update URL with search parameters
+    updateURLWithSearchParams({
+        manifestNumber: manifestNumberValue,
+        trackingNumber: trackingNumberValue,
+        itemNumberShipping: itemNumberValue,
+        createDateStart: createDateStartValue,
+        createDateEnd: createDateEndValue,
+        status: statusValue
+    });
+    
+    // Perform the search
+    await performManifestSearch({
+        manifestNumber: manifestNumberValue,
+        trackingNumber: trackingNumberValue,
+        itemNumber: itemNumberValue,
+        createDateStart: createDateStartValue,
+        createDateEnd: createDateEndValue,
+        status: statusValue
+    });
 });
 
 // Function to fetch manifest details when a manifest is selected from the list
@@ -240,10 +306,11 @@ const createManifestButton = async () => {
     const userRole = await getUserRole();
     if (userRole.toLowerCase() === 'admin') {
         const manifestButton = document.createElement('button');
-        manifestButton.className = 'btn btn-primary p-0 rounded-circle';
+        manifestButton.className = 'btn btn-primary p-2';
         manifestButton.href = './create-manifest';
         manifestButton.innerHTML = `
-                        <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="currentColor" class="bi bi-plus-circle" viewBox="0 0 16 16">
+                        Create Manifest
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-circle" viewBox="0 0 16 16">
                             <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
                             <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
                         </svg>
@@ -255,4 +322,7 @@ const createManifestButton = async () => {
     }
 };
 
-document.addEventListener('DOMContentLoaded', createManifestButton);
+document.addEventListener('DOMContentLoaded', async () => {
+    await loadSearchParamsFromURL();
+    createManifestButton();
+});

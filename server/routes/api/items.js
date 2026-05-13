@@ -16,7 +16,7 @@ router.get('/search-item', authenticateToken, async (req, res) => {
         // Extracting search term and column from query parameters
         const searchTerm = req.query.v;
         const column = req.query.q;
-
+        
         // Initialize SQL query and placeholders based on the search column
         let sql, placeholders;
 
@@ -24,7 +24,7 @@ router.get('/search-item', authenticateToken, async (req, res) => {
         if (['itemNumber'].includes(column)) {
 
             // For SKU and UPC, we want to search for an exact match
-            sql = 'SELECT Items.sku, Items.description FROM Items WHERE sku = ? OR upc = ?';
+            sql = 'SELECT Items.sku, Items.description FROM Items WHERE CAST(sku as CHAR) = ? OR CAST(upc as CHAR) = ?';
             placeholders = [searchTerm, searchTerm];
         } else if (['description', 'model', 'brand'].includes(column)) {
 
@@ -44,7 +44,7 @@ router.get('/search-item', authenticateToken, async (req, res) => {
 
         if (rows.length === 1) {
             // If exactly one item is found, query for the remaining details of that item
-            const itemSql = 'SELECT *, (Items.orderQuantity + Items.availableQuantity) as totalQuantity FROM Items WHERE sku = ?';
+            const itemSql = 'SELECT *, (Items.orderQuantity + Items.availableQuantity) as totalQuantity FROM Items WHERE CAST(sku as CHAR) = ?';
             const [itemRows] = await db.query(itemSql, [rows[0].sku]);
             res.json({ found: true, items: itemRows });
         } else {
@@ -83,7 +83,7 @@ router.post('/create-item', authenticateToken, requireAdmin, async (req, res) =>
         }
 
         // Check if an item with the same UPC already exists
-        const [existingItems] = await db.query('SELECT * FROM Items WHERE upc = ?', [upc]);
+        const [existingItems] = await db.query('SELECT * FROM Items WHERE CAST(upc as CHAR) = ?', [upc]);
         if (existingItems.length > 0) {
             return res.status(400).json({ error: 'Item with the same UPC already exists' });
         }
@@ -126,13 +126,13 @@ router.put('/modify-item', authenticateToken, requireAdmin, async (req, res) => 
         }
 
         // Check if the item exists
-        const [existingItems] = await db.query('SELECT * FROM Items WHERE upc = ?', [upc]);
+        const [existingItems] = await db.query('SELECT * FROM Items WHERE CAST(upc as CHAR) = ?', [upc]);
         if (existingItems.length === 0) {
             return res.status(404).json({ error: 'Item not found' });
         }
 
         // Update the item in the database
-        const sql = 'UPDATE Items SET description = ?, model = ?, brand = ?, price = ? WHERE upc = ?';
+        const sql = 'UPDATE Items SET description = ?, model = ?, brand = ?, price = ? WHERE CAST(upc as CHAR) = ?';
         const placeholders = [description, model, brand, price, upc];
 
         await db.query(sql, placeholders);

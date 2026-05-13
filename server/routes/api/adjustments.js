@@ -24,7 +24,7 @@ router.get('/search-adjustment', authenticateToken, requirePrivileged, async (re
                     SUM(InventoryAdjustmentItems.cost) AS totalCost
                 FROM InventoryAdjustments
                 LEFT JOIN InventoryAdjustmentItems ON InventoryAdjustments.inventoryAdjustmentID = InventoryAdjustmentItems.inventoryAdjustmentID
-                WHERE InventoryAdjustments.inventoryAdjustmentID = ?
+                WHERE CAST(InventoryAdjustments.inventoryAdjustmentID as CHAR) = ?
                 GROUP BY InventoryAdjustments.inventoryAdjustmentID
             `;
             placeholders = [adjustmentNumber];
@@ -36,7 +36,7 @@ router.get('/search-adjustment', authenticateToken, requirePrivileged, async (re
 
             // Build dynamic WHERE clause
             if (itemNumber) {
-                whereConditions.push('(Items.upc = ? OR Items.sku = ?)');
+                whereConditions.push('(CAST(Items.upc as CHAR) = ? OR CAST(Items.sku as CHAR) = ?)');
                 placeholders.push(itemNumber, itemNumber);
             }
             if (status) {
@@ -96,7 +96,7 @@ router.get('/search-adjustment', authenticateToken, requirePrivileged, async (re
                     InventoryAdjustmentItems.cost
                 FROM InventoryAdjustmentItems
                 JOIN Items ON InventoryAdjustmentItems.sku = Items.sku
-                WHERE InventoryAdjustmentItems.inventoryAdjustmentID = ?
+                WHERE CAST(InventoryAdjustmentItems.inventoryAdjustmentID as CHAR) = ?
 
             `;
             const [items] = await db.query(adjustmentItemsSql, [rows[0].inventoryAdjustmentID]);
@@ -123,19 +123,19 @@ router.post('/complete-adjustment', authenticateToken, requirePrivileged, async 
         // Update the inventory quantities
         for (const item of adjustmentItems) {
             await db.query(
-                'UPDATE Items SET availableQuantity = availableQuantity + ? WHERE sku = ?',
+                'UPDATE Items SET availableQuantity = availableQuantity + ? WHERE CAST(sku as CHAR) = ?',
                 [item.variance, item.sku]
             );
 
             await db.query(
-                'UPDATE InventoryAdjustmentItems SET variance = ?, cost = ? WHERE inventoryAdjustmentID = ? AND sku = ?',
+                'UPDATE InventoryAdjustmentItems SET variance = ?, cost = ? WHERE CAST(inventoryAdjustmentID as CHAR) = ? AND CAST(sku as CHAR) = ?',
                 [item.variance, item.cost, adjustmentNumber, item.sku]
             );
         }
 
         // Update the adjustment status to "Completed" and who completed it
         await db.query(
-            'UPDATE InventoryAdjustments SET status = ?, adjustedBy = ?, reason = ?, completeDate = NOW() WHERE inventoryAdjustmentID = ?',
+            'UPDATE InventoryAdjustments SET status = ?, adjustedBy = ?, reason = ?, completeDate = NOW() WHERE CAST(inventoryAdjustmentID as CHAR) = ?',
             ['Completed', req.user.employeeID, adjustmentReason, adjustmentNumber]
         );
 
@@ -157,7 +157,7 @@ router.post('/delete-adjustment', authenticateToken, requirePrivileged, async (r
 
         // Check if adjustment is suspended (will not delete completed adjustments)
         const [adjustment] = await db.query(
-            'SELECT status FROM InventoryAdjustments WHERE inventoryAdjustmentID = ?',
+            'SELECT status FROM InventoryAdjustments WHERE CAST(inventoryAdjustmentID as CHAR) = ?',
             [adjustmentNumber]
         );
 
@@ -176,13 +176,13 @@ router.post('/delete-adjustment', authenticateToken, requirePrivileged, async (r
 
         // Delete the adjustment items
         await db.query(
-            'DELETE FROM InventoryAdjustmentItems WHERE inventoryAdjustmentID = ?',
+            'DELETE FROM InventoryAdjustmentItems WHERE CAST(inventoryAdjustmentID as CHAR) = ?',
             [adjustmentNumber]
         );
 
         // Delete the adjustment
         await db.query(
-            'DELETE FROM InventoryAdjustments WHERE inventoryAdjustmentID = ?',
+            'DELETE FROM InventoryAdjustments WHERE CAST(inventoryAdjustmentID as CHAR) = ?',
             [adjustmentNumber]
         );
 
@@ -208,14 +208,14 @@ router.post('/suspend-adjustment', authenticateToken, requirePrivileged, async (
         // Update the inventory adjustment items without changing inventory quantities
         for (const item of adjustmentItems) {
             await db.query(
-                'UPDATE InventoryAdjustmentItems SET variance = ?, cost = ? WHERE inventoryAdjustmentID = ? AND sku = ?',
+                'UPDATE InventoryAdjustmentItems SET variance = ?, cost = ? WHERE CAST(inventoryAdjustmentID as CHAR) = ? AND CAST(sku as CHAR) = ?',
                 [item.variance, item.cost, adjustmentNumber, item.sku]
             );
         }
 
         // Update the adjustment status to "Suspended"
         await db.query(
-            'UPDATE InventoryAdjustments SET status = ?, reason = ? WHERE inventoryAdjustmentID = ?',
+            'UPDATE InventoryAdjustments SET status = ?, reason = ? WHERE CAST(inventoryAdjustmentID as CHAR) = ?',
             ['Suspended', adjustmentReason, adjustmentNumber]
         );
 
@@ -264,13 +264,13 @@ router.post('/create-adjustment', authenticateToken, requirePrivileged, async (r
         // If the adjustment status is "Completed", update the inventory quantities and set the complete date
         if (status.toLowerCase() === 'completed') {
             await db.query(
-                'UPDATE InventoryAdjustments SET completeDate = NOW() WHERE inventoryAdjustmentID = ?',
+                'UPDATE InventoryAdjustments SET completeDate = NOW() WHERE CAST(inventoryAdjustmentID as CHAR) = ?',
                 [adjustmentNumber]
             );
             
             for (const item of adjustmentItems) {
                 await db.query(
-                    'UPDATE Items SET AvailableQuantity = AvailableQuantity + ? WHERE sku = ?',
+                    'UPDATE Items SET AvailableQuantity = AvailableQuantity + ? WHERE CAST(sku as CHAR) = ?',
                     [item.variance, item.sku]
                 );
             }

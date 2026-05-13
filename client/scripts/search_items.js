@@ -35,18 +35,18 @@ const clearForm = () => {
 const clearButton = document.getElementById('clearButton');
 clearButton.addEventListener('click', clearForm);
 
-// Attach event listener to the search form to handle submissions
-searchForm.addEventListener('submit', async (event) => {
-    event.preventDefault();
+// Function to update URL with search parameters
+const updateURLWithSearchParams = (fieldId, fieldValue) => {
+    const url = new URL(window.location);
+    url.searchParams.set('q', fieldId);
+    url.searchParams.set('v', fieldValue);
+    window.history.replaceState({}, '', url);
+};
 
-    const filledField = fields.find(field => field.value.trim() !== '');
-    if (!filledField) {
-        alert('Please enter a value into one search field.');
-        return;
-    }
-
-    const q = encodeURIComponent(filledField.id);
-    const v = encodeURIComponent(filledField.value.trim());
+// Function to perform the search API request
+const performSearch = async (fieldId, fieldValue) => {
+    const q = encodeURIComponent(fieldId);
+    const v = encodeURIComponent(fieldValue);
     const url = `/api/items/search-item?q=${q}&v=${v}`;
 
     try {
@@ -86,6 +86,40 @@ searchForm.addEventListener('submit', async (event) => {
         console.error('Error fetching search results:', error);
         alert('An error occurred while searching. Please try again later.');
     }
+};
+
+// Function to load search parameters from URL and populate fields
+const loadSearchParamsFromURL = async () => {
+    const url = new URL(window.location);
+    const q = url.searchParams.get('q');
+    const v = url.searchParams.get('v');
+    
+    if (q && v) {
+        const field = document.getElementById(q);
+        if (field && fields.includes(field)) {
+            field.value = v;
+            updateFieldStates();
+            // Automatically perform the search
+            await performSearch(q, v);
+        }
+    }
+};
+
+// Attach event listener to the search form to handle submissions
+searchForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+
+    const filledField = fields.find(field => field.value.trim() !== '');
+    if (!filledField) {
+        alert('Please enter a value into one search field.');
+        return;
+    }
+
+    // Update URL with search parameters
+    updateURLWithSearchParams(filledField.id, filledField.value.trim());
+    
+    // Perform the search
+    await performSearch(filledField.id, filledField.value.trim());
 });
 
 // Function to fetch item details by SKU
@@ -146,10 +180,11 @@ const createItemButton = async () => {
     const userRole = await getUserRole();
     if (userRole.toLowerCase() === 'admin') {
         const manifestButton = document.createElement('button');
-        manifestButton.className = 'btn btn-primary p-0 rounded-circle';
+        manifestButton.className = 'btn btn-primary p-2';
         manifestButton.href = './create-item';
         manifestButton.innerHTML = `
-                        <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="currentColor" class="bi bi-plus-circle" viewBox="0 0 16 16">
+                        Create Item
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-circle" viewBox="0 0 16 16">
                             <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
                             <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
                         </svg>
@@ -160,7 +195,11 @@ const createItemButton = async () => {
         document.getElementById('createButtonWrapper').appendChild(manifestButton);
     }
 };
-document.addEventListener('DOMContentLoaded', createItemButton);
+
+document.addEventListener('DOMContentLoaded', () => {
+    loadSearchParamsFromURL();
+    createItemButton();
+});
 
 // Function for adding the modify item button for admin users
 const createModifyButton = async (sku) => {
