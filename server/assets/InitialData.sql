@@ -5,6 +5,12 @@ VALUES ('3852923', 'Anthony', 'Elanga', '$2b$10$3UEsOMk9M1KNCj3Ya1Z2KOJLLf/pkPkT
 INSERT INTO Employees (employeeID, firstName, lastName, passwordHash, role)
 VALUES ('3852924', 'Braden', 'Armstrong', '$2b$10$y76ByUfg8g2EUFgeYIXbUuNJmf5pSPMe3VmMlWI7Wzukr3F5fG2EO', 'Admin');
 
+/* The password hashes above correspond to the following plaintext passwords:
+   - Susan Lassiter: "mysecretpassword"
+   - Anthony Elanga: "supersecretpassword"
+   - Braden Armstrong: "ultrasecretpassword"
+*/
+
 INSERT INTO Customers (firstName, lastName, phoneNumber, email)
 VALUES ('Jonathan', 'Sandoval', '123-555-3245', 'jsan@example.com');
 INSERT INTO Customers (firstName, lastName, phoneNumber, email)
