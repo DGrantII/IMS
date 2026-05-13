@@ -16,7 +16,7 @@ const createNav = async () => {
     const navItems = [
         { text: 'Home', href: './', page: 'index' },
         { text: 'Products', href: './products', page: 'products' },
-        { text: 'Shipping', href: './shipping', page: 'shipping' },
+        { text: 'Manifests', href: './manifests', page: 'manifests' },
         { text: 'Logout', href: '#', id: 'logoutBtn', icon: true }
     ];
 
