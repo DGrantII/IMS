@@ -98,3 +98,6 @@ For development, you can use nodemon to automatically restart the server on chan
 - Ensure MySQL is running and the database is properly configured.
 - Check the console for any error messages when starting the server.
 - Verify that the `.env` file has the correct database credentials.
+
+## Image gallery
+Images of the functioning web application can be seen in the /gallery folder.
